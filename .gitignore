@@ -1,0 +1,30 @@
+# Encrypted vault files — never commit these
+*.wnt
+*.enc
+*.vault
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE settings
+.vscode/settings.json
+.idea/
+
+# Operating system metadata
+.DS_Store
+Thumbs.db
+
+# PyInstaller artifacts
+*.spec

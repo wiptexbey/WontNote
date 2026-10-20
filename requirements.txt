@@ -1,0 +1,11 @@
+# Core cryptography: AES-256-GCM via AESGCM, HKDF-SHA256
+cryptography>=42.0.0
+
+# Argon2id password hashing (argon2.low_level.hash_secret_raw)
+argon2-cffi>=23.1.0
+
+# Platform-appropriate user data directory (AppData on Windows, ~/.local/share on Linux)
+platformdirs>=4.2.0
+
+# Test framework
+pytest>=8.0.0
