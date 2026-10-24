@@ -19,7 +19,7 @@ from ..widgets import PasswordEntry, PrimaryBtn, SecondaryBtn, HSep
 
 class LoginScreen(tk.Frame):
     """
-    Centered login card — mirrors the 'Tekrar hoş geldin' HTML design.
+    Centered login card — mirrors the 'Welcome back' HTML design.
     """
 
     def __init__(self, parent: tk.Widget, app):
@@ -94,21 +94,21 @@ class LoginScreen(tk.Frame):
         tk.Label(badge, text="WontNote  •  v1.0", bg=SURFACE_HIGH,
                  fg=ON_SURFACE_VAR, font=f_label_sm()).pack(side="left", padx=(0, 6))
 
-        tk.Label(top, text="Tekrar hoş geldin", bg=SURFACE_LOW, fg=ON_SURFACE,
+        tk.Label(top, text="Welcome back", bg=SURFACE_LOW, fg=ON_SURFACE,
                  font=f_headline_lg()).pack(pady=(8, 0))
-        tk.Label(top, text="Notlarına erişmek için şifreni gir.",
+        tk.Label(top, text="Enter your password to access your notes.",
                  bg=SURFACE_LOW, fg=ON_SURFACE_VAR, font=f_body_md()).pack(pady=(3, 0))
 
         # ── Form ──────────────────────────────────────────────────────────────
         form = tk.Frame(card, bg=SURFACE_LOW)
         form.pack(fill="x", padx=36, pady=20)
 
-        # Label row (Şifre + Caps Lock warning)
+        # Label row (Password + Caps Lock warning)
         lbl_row = tk.Frame(form, bg=SURFACE_LOW)
         lbl_row.pack(fill="x")
-        tk.Label(lbl_row, text="Şifre", bg=SURFACE_LOW, fg=ON_SURFACE,
+        tk.Label(lbl_row, text="Password", bg=SURFACE_LOW, fg=ON_SURFACE,
                  font=f_label_md()).pack(side="left")
-        self._caps_lbl = tk.Label(lbl_row, text="⚠ Caps Lock Açık",
+        self._caps_lbl = tk.Label(lbl_row, text="⚠ Caps Lock On",
                                    bg=SURFACE_LOW, fg=ERROR, font=f_label_sm())
         # not packed yet — shown dynamically
 
@@ -121,9 +121,9 @@ class LoginScreen(tk.Frame):
         # Char count / hint
         hint_row = tk.Frame(form, bg=SURFACE_LOW)
         hint_row.pack(fill="x", pady=(4, 0))
-        tk.Label(hint_row, text="↵ Enter ile hızlı açın",
+        tk.Label(hint_row, text="↵ Press Enter to unlock quickly",
                  bg=SURFACE_LOW, fg=ON_SURFACE_VAR, font=f_label_sm()).pack(side="left")
-        self._char_lbl = tk.Label(hint_row, text="0 karakter",
+        self._char_lbl = tk.Label(hint_row, text="0 characters",
                                    bg=SURFACE_LOW, fg=ON_SURFACE_VAR, font=f_mono())
         self._char_lbl.pack(side="right")
 
@@ -135,7 +135,7 @@ class LoginScreen(tk.Frame):
                  font=f_label_md()).pack(side="left")
         self._err_txt = tk.Label(
             self._err_inner,
-            text="Hatalı şifre. Lütfen kasanızın şifresini kontrol edin.",
+            text="Incorrect password. Please check your vault password.",
             bg=ERROR_CONT, fg=ON_ERROR_CONT, font=f_label_md(),
             wraplength=340, justify="left",
         )
@@ -143,7 +143,7 @@ class LoginScreen(tk.Frame):
 
         # Submit button
         self._unlock_btn = PrimaryBtn(
-            form, "  🔓  Kilidi Aç  ", command=self._on_unlock,
+            form, "  🔓  Unlock  ", command=self._on_unlock,
         )
         self._unlock_btn.pack(fill="x", pady=(10, 0), ipady=3)
 
@@ -151,7 +151,7 @@ class LoginScreen(tk.Frame):
         links = tk.Frame(form, bg=SURFACE_LOW)
         links.pack(fill="x", pady=(10, 0))
         recovery_btn = tk.Label(
-            links, text="🗝 Kurtarma Anahtarı ile Aç",
+            links, text="🗝 Unlock with Recovery Key",
             bg=SURFACE_LOW, fg=PRIMARY, font=f_label_md(), cursor="hand2",
         )
         recovery_btn.pack(side="left")
@@ -164,7 +164,7 @@ class LoginScreen(tk.Frame):
         bottom_inner.pack(fill="x", padx=12, pady=6)
         tk.Label(bottom_inner, text="✓", bg=SURFACE_HIGH, fg=PRIMARY,
                  font=f_label_md()).pack(side="left")
-        tk.Label(bottom_inner, text=" Yerel Kasa Durumu: Korumalı",
+        tk.Label(bottom_inner, text=" Local Vault Status: Protected",
                  bg=SURFACE_HIGH, fg=ON_SURFACE_VAR, font=f_label_sm()).pack(side="left")
         tk.Label(bottom_inner, text="AES-256-GCM",
                  bg=SURFACE_HIGH, fg=ON_SURFACE_VAR, font=f_mono()).pack(side="right")
@@ -180,7 +180,7 @@ class LoginScreen(tk.Frame):
     # ── Event handlers ────────────────────────────────────────────────────────
     def _on_key_up(self, event):
         val = self._pwd.get()
-        self._char_lbl.configure(text=f"{len(val)} karakter")
+        self._char_lbl.configure(text=f"{len(val)} characters")
         self._err_frame.pack_forget()
 
         # Caps Lock detection
@@ -197,7 +197,7 @@ class LoginScreen(tk.Frame):
         if not pwd:
             self._show_error()
             return
-        self._unlock_btn.configure(state="disabled", text="⏳ Şifre çözülüyor…")
+        self._unlock_btn.configure(state="disabled", text="⏳ Decrypting…")
         self.after(50, lambda: self._do_unlock(pwd))
 
     def _do_unlock(self, pwd: str):
@@ -208,13 +208,13 @@ class LoginScreen(tk.Frame):
             self.app.notes      = notes
             self.app.show_main()
         except VaultError:
-            self._unlock_btn.configure(state="normal", text="  🔓  Kilidi Aç  ")
+            self._unlock_btn.configure(state="normal", text="  🔓  Unlock  ")
             self._show_error()
             self._pwd.clear()
             self._pwd.focus()
         except Exception as exc:
-            self._unlock_btn.configure(state="normal", text="  🔓  Kilidi Aç  ")
-            self._show_error(f"Hata: {exc}")
+            self._unlock_btn.configure(state="normal", text="  🔓  Unlock  ")
+            self._show_error(f"Error: {exc}")
 
     def _show_error(self, msg: str | None = None):
         if msg:
@@ -223,22 +223,22 @@ class LoginScreen(tk.Frame):
 
     def _open_recovery_modal(self):
         win = tk.Toplevel(self.winfo_toplevel())
-        win.title("Kurtarma Anahtarı ile Aç")
+        win.title("Unlock with Recovery Key")
         win.resizable(True, True)
         win.minsize(420, 320)
         win.grab_set()
         win.configure(bg=SURFACE_LOW)
 
-        tk.Label(win, text="🗝 Kurtarma Anahtarı", bg=SURFACE_LOW,
+        tk.Label(win, text="🗝 Recovery Key", bg=SURFACE_LOW,
                  fg=ON_SURFACE, font=f_headline_sm()).pack(padx=24, pady=(16, 4))
         tk.Label(
             win,
-            text="Kurulum sırasında aldığınız kurtarma anahtarını girin.",
+            text="Enter the recovery key you received during setup.",
             bg=SURFACE_LOW, fg=ON_SURFACE_VAR, font=f_body_sm(),
             wraplength=340, justify="center",
         ).pack(padx=24)
 
-        tk.Label(win, text="Kurtarma Anahtarı", bg=SURFACE_LOW, fg=ON_SURFACE,
+        tk.Label(win, text="Recovery Key", bg=SURFACE_LOW, fg=ON_SURFACE,
                  font=f_label_md(), anchor="w").pack(fill="x", padx=24, pady=(12, 2))
         key_entry = tk.Entry(win, font=("Consolas", 11), bg=SURFACE_HIGH,
                               fg=ON_SURFACE, relief="flat", justify="center")
@@ -250,7 +250,7 @@ class LoginScreen(tk.Frame):
                  font=("Segoe UI Emoji", 11)).pack(side="left", padx=(8, 4), pady=6)
         tk.Label(
             info,
-            text="Kurtarma anahtarı olmadan şifrelenmiş veriler açılamaz.",
+            text="Encrypted data cannot be opened without the recovery key.",
             bg=SURFACE_CONT, fg=ON_SURFACE_VAR, font=f_label_sm(),
             wraplength=280, justify="left",
         ).pack(side="left", pady=6, padx=(0, 8))
@@ -262,7 +262,7 @@ class LoginScreen(tk.Frame):
         def do_recovery():
             key = key_entry.get().strip()
             if not key:
-                err_lbl.configure(text="Lütfen kurtarma anahtarını girin.")
+                err_lbl.configure(text="Please enter the recovery key.")
                 return
             from wontnote.crypto_core import unlock_with_recovery_key, VaultError
             try:
@@ -276,15 +276,15 @@ class LoginScreen(tk.Frame):
             except VaultError:
                 err_lbl.configure(text="Could not open vault.")
             except Exception as exc:
-                err_lbl.configure(text=f"Hata: {exc}")
+                err_lbl.configure(text=f"Error: {exc}")
 
         btn_row = tk.Frame(win, bg=SURFACE_LOW)
         btn_row.pack(fill="x", padx=24, pady=(0, 16))
-        tk.Button(btn_row, text="Vazgeç", command=win.destroy,
+        tk.Button(btn_row, text="Cancel", command=win.destroy,
                    bg=SURFACE_HIGH, fg=ON_SURFACE, relief="flat",
                    font=f_label_md(), cursor="hand2",
                    padx=10, pady=4).pack(side="left")
-        tk.Button(btn_row, text="Doğrula ve Aç", command=do_recovery,
+        tk.Button(btn_row, text="Verify and Unlock", command=do_recovery,
                    bg=PRIMARY, fg=ON_PRIMARY, relief="flat",
                    font=f_label_md(), cursor="hand2",
                    padx=10, pady=4).pack(side="right")

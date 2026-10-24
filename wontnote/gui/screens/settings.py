@@ -1,7 +1,7 @@
 """
 settings.py — WontNote Preferences dialog.
 Modal Toplevel with left-nav + right content panel.
-Mirrors the 'Tercihler ve Ayarlar' HTML design.
+Mirrors the 'Preferences and Settings' HTML design.
 """
 import tkinter as tk
 from datetime import datetime, timezone
@@ -19,21 +19,21 @@ from ..widgets import PasswordEntry, PrimaryBtn, SecondaryBtn, HSep, ScrollFrame
 class SettingsDialog(tk.Toplevel):
     """
     Modal preferences window (900 × 620).
-    Sections: Genel | Görünüm | Güvenlik (active) | Düzenleyici | Yedekleme
+    Sections: General | Appearance | Security (active) | Editor | Backup
     """
 
     _SECTIONS = [
-        ("⚙", "Genel",               "Dil, Sistem Başlangıcı"),
-        ("🎨", "Görünüm & Tema",      "Açık, Koyu, Sistem"),
-        ("🔐", "Güvenlik & Şifre",    "Kilit ve Şifreleme"),
-        ("📝", "Not Düzenleyici",      "Yazı Tipi, Satır Aralığı"),
-        ("💾", "Yedekleme & Dışa Aktar","JSON, MD, Şifreli Arşiv"),
+        ("⚙", "General",               "Language, Launch at Startup"),
+        ("🎨", "Appearance & Theme",      "Light, Dark, System"),
+        ("🔐", "Security & Password",    "Lock and Encryption"),
+        ("📝", "Note Editor",      "Font, Line Spacing"),
+        ("💾", "Backup & Export","JSON, MD, Encrypted Archive"),
     ]
 
     def __init__(self, parent: tk.Tk, app):
         super().__init__(parent)
         self.app = app
-        self.title("WontNote — Tercihler ve Ayarlar")
+        self.title("WontNote — Preferences and Settings")
         self.resizable(True, True)
         self.minsize(780, 520)
         self.configure(bg=SURFACE_LOW)
@@ -47,7 +47,7 @@ class SettingsDialog(tk.Toplevel):
         y = max(0, (sh - h) // 2)
         self.geometry(f"{w}x{h}+{x}+{y}")
 
-        self._active_section = 2  # Güvenlik (0-indexed)
+        self._active_section = 2  # Security (0-indexed)
         self._build()
 
     # ── Layout ────────────────────────────────────────────────────────────────
@@ -56,7 +56,7 @@ class SettingsDialog(tk.Toplevel):
         title_bar = tk.Frame(self, bg=SURFACE_HIGH, height=36)
         title_bar.pack(fill="x")
         title_bar.pack_propagate(False)
-        tk.Label(title_bar, text="🔒 WontNote — Tercihler ve Ayarlar",
+        tk.Label(title_bar, text="🔒 WontNote — Preferences and Settings",
                  bg=SURFACE_HIGH, fg=ON_SURFACE,
                  font=f_label_md()).pack(side="left", padx=12, pady=8)
 
@@ -127,9 +127,9 @@ class SettingsDialog(tk.Toplevel):
         about.pack(fill="x", padx=8, pady=(16, 8))
         about_inner = tk.Frame(about, bg=SURFACE_CONT)
         about_inner.pack(fill="x", padx=8, pady=8)
-        tk.Label(about_inner, text="ℹ️ Hakkında", bg=SURFACE_CONT,
+        tk.Label(about_inner, text="ℹ️ About", bg=SURFACE_CONT,
                  fg=ON_SURFACE, font=f_label_md()).pack(anchor="w")
-        for line in ("Sürüm: v1.0", "Python 3.12 + Tkinter",
+        for line in ("Version: v1.0", "Python 3.12 + Tkinter",
                      "Argon2id + AES-256-GCM"):
             tk.Label(about_inner, text=line, bg=SURFACE_CONT,
                      fg=OUTLINE, font=f_mono()).pack(anchor="w")
@@ -184,7 +184,7 @@ class SettingsDialog(tk.Toplevel):
         if idx < len(builders):
             builders[idx]()
 
-    # ── Section: Güvenlik ─────────────────────────────────────────────────────
+    # ── Section: Security ─────────────────────────────────────────────────────
     def _section_security(self):
         host = self._content_host
         sf = ScrollFrame(host, bg=SURFACE_LOWEST)
@@ -201,9 +201,9 @@ class SettingsDialog(tk.Toplevel):
                  font=("Segoe UI Emoji", 14)).place(relx=0.5, rely=0.5, anchor="center")
         txt_f = tk.Frame(hdr, bg=SURFACE_LOWEST)
         txt_f.pack(side="left", padx=(10, 0))
-        tk.Label(txt_f, text="Güvenlik ve Kilit Ayarları",
+        tk.Label(txt_f, text="Security and Lock Settings",
                  bg=SURFACE_LOWEST, fg=ON_SURFACE, font=f_headline_sm()).pack(anchor="w")
-        tk.Label(txt_f, text="Hassas notlar, yerel veritabanı koruması ve oturum kilitleri",
+        tk.Label(txt_f, text="Sensitive notes, local database protection and session locks",
                  bg=SURFACE_LOWEST, fg=OUTLINE, font=f_body_sm()).pack(anchor="w")
         tk.Label(hdr, text="Argon2id + AES-256-GCM", bg=SURFACE_HIGH,
                  fg=PRIMARY, font=f_mono(), padx=6, pady=2).pack(side="right")
@@ -211,14 +211,14 @@ class SettingsDialog(tk.Toplevel):
         HSep(p).pack(fill="x", pady=(12, 0))
 
         # ── Card 1: Change password ───────────────────────────────────────────
-        card1 = self._card(p, "🔑 Ana Şifreyi Değiştir")
+        card1 = self._card(p, "🔑 Change Master Password")
 
-        tk.Label(card1, text="Mevcut şifre", bg=SURFACE_LOWEST,
+        tk.Label(card1, text="Current password", bg=SURFACE_LOWEST,
                  fg=ON_SURFACE_VAR, font=f_label_sm()).pack(anchor="w", pady=(8, 2))
         self._cur_pwd = PasswordEntry(card1, bg_entry=SURFACE_HIGH)
         self._cur_pwd.pack(fill="x", ipady=2)
 
-        tk.Label(card1, text="Yeni şifre", bg=SURFACE_LOWEST,
+        tk.Label(card1, text="New password", bg=SURFACE_LOWEST,
                  fg=ON_SURFACE_VAR, font=f_label_sm()).pack(anchor="w", pady=(8, 2))
         self._new_pwd = PasswordEntry(card1, bg_entry=SURFACE_HIGH,
                                        on_change=self._check_pwd_strength)
@@ -227,13 +227,13 @@ class SettingsDialog(tk.Toplevel):
         # Strength
         sm_row = tk.Frame(card1, bg=SURFACE_LOWEST)
         sm_row.pack(fill="x", pady=(4, 0))
-        tk.Label(sm_row, text="Güç:", bg=SURFACE_LOWEST, fg=OUTLINE,
+        tk.Label(sm_row, text="Strength:", bg=SURFACE_LOWEST, fg=OUTLINE,
                  font=f_mono()).pack(side="left")
         from ..widgets import StrengthMeter
         self._strength = StrengthMeter(sm_row)
         self._strength.pack(side="left", padx=6)
 
-        tk.Label(card1, text="Yeni şifreyi doğrula", bg=SURFACE_LOWEST,
+        tk.Label(card1, text="Confirm new password", bg=SURFACE_LOWEST,
                  fg=ON_SURFACE_VAR, font=f_label_sm()).pack(anchor="w", pady=(8, 2))
         self._conf_pwd = PasswordEntry(card1, bg_entry=SURFACE_HIGH)
         self._conf_pwd.pack(fill="x", ipady=2)
@@ -247,23 +247,23 @@ class SettingsDialog(tk.Toplevel):
 
         btn_row = tk.Frame(card1, bg=SURFACE_LOWEST)
         btn_row.pack(fill="x", pady=(10, 0))
-        SecondaryBtn(btn_row, "Vazgeç",
+        SecondaryBtn(btn_row, "Cancel",
                       command=lambda: [w.clear() for w in
                                        (self._cur_pwd, self._new_pwd, self._conf_pwd)]
                       ).pack(side="left")
-        PrimaryBtn(btn_row, "Şifreyi Güncelle",
+        PrimaryBtn(btn_row, "Update Password",
                     command=self._change_password).pack(side="right")
 
         # ── Card 2: Auto-lock ─────────────────────────────────────────────────
-        card2 = self._card(p, "⏱ Otomatik Kilitleme")
+        card2 = self._card(p, "⏱ Auto-Lock")
 
         row1 = tk.Frame(card2, bg=SURFACE_LOWEST)
         row1.pack(fill="x", pady=(8, 0))
-        tk.Label(row1, text="Hareketsizlik zaman aşımı",
+        tk.Label(row1, text="Inactivity timeout",
                  bg=SURFACE_LOWEST, fg=ON_SURFACE, font=f_label_md()).pack(side="left")
-        self._timeout_var = tk.StringVar(value="5 dakika")
+        self._timeout_var = tk.StringVar(value="5 minutes")
         opt = tk.OptionMenu(row1, self._timeout_var,
-                             "1 dakika", "5 dakika", "15 dakika", "Asla")
+                             "1 minute", "5 minutes", "15 minutes", "Never")
         opt.configure(bg=SURFACE_HIGH, fg=ON_SURFACE, relief="flat",
                        font=f_body_md(), highlightthickness=0)
         opt["menu"].configure(bg=SURFACE_HIGH, fg=ON_SURFACE)
@@ -272,10 +272,10 @@ class SettingsDialog(tk.Toplevel):
         self._min_chk = tk.BooleanVar(value=True)
         self._hide_chk = tk.BooleanVar(value=True)
         for var, text, desc in [
-            (self._min_chk,  "Simge durumuna küçültüldüğünde kilitle",
-             "Görev çubuğuna indiği an oturumu koru"),
-            (self._hide_chk, "Kilit ekranında başlıkları gizle",
-             "Kilit ekranında not listesi bulanıklaştırılır"),
+            (self._min_chk,  "Lock when minimized",
+             "Keep the session safe as soon as the app goes to the taskbar"),
+            (self._hide_chk, "Hide titles on the lock screen",
+             "The note list is blurred on the lock screen"),
         ]:
             chk_row = tk.Frame(card2, bg=SURFACE_LOWEST)
             chk_row.pack(fill="x", pady=(6, 0))
@@ -289,7 +289,7 @@ class SettingsDialog(tk.Toplevel):
                      fg=OUTLINE, font=f_label_sm()).pack(side="left", padx=(8, 0))
 
         # ── Card 3: Recovery key ──────────────────────────────────────────────
-        card3 = self._card(p, "🗝 Kurtarma Anahtarı ve Sıfırlama")
+        card3 = self._card(p, "🗝 Recovery Key and Reset")
 
         # Warning
         warn = tk.Frame(card3, bg=ERROR_CONT)
@@ -300,12 +300,12 @@ class SettingsDialog(tk.Toplevel):
                  font=("Segoe UI Emoji", 14)).pack(side="left", padx=(0, 8))
         txt_f2 = tk.Frame(warn_inner, bg=ERROR_CONT)
         txt_f2.pack(side="left")
-        tk.Label(txt_f2, text="Kritik Güvenlik Uyarısı",
+        tk.Label(txt_f2, text="Critical Security Warning",
                  bg=ERROR_CONT, fg=ERROR, font=f_label_md()).pack(anchor="w")
         tk.Label(
             txt_f2,
-            text="Parola ve kurtarma anahtarı kaybolursa, "
-                 "yerel kasa geri döndürülemez biçimde kilitli kalır.",
+            text="If the password and recovery key are lost, "
+                 "the local vault remains locked irreversibly.",
             bg=ERROR_CONT, fg=ON_ERROR_CONT, font=f_body_sm(),
             wraplength=460, justify="left",
         ).pack(anchor="w")
@@ -319,36 +319,36 @@ class SettingsDialog(tk.Toplevel):
 
         btn_row2 = tk.Frame(card3, bg=SURFACE_LOWEST)
         btn_row2.pack(fill="x", pady=(10, 0))
-        SecondaryBtn(btn_row2, "🔄 Yeni Anahtar Üret",
+        SecondaryBtn(btn_row2, "🔄 Generate New Key",
                       command=self._regen_recovery_key).pack(side="left")
 
-    # ── Section: Genel ────────────────────────────────────────────────────────
+    # ── Section: General ─────────────────────────────────────────────────────
     def _section_general(self):
         p = self._content_host
-        tk.Label(p, text="Genel Ayarlar", bg=SURFACE_LOWEST,
+        tk.Label(p, text="General Settings", bg=SURFACE_LOWEST,
                  fg=ON_SURFACE, font=f_headline_sm()).pack(padx=24, pady=24)
-        tk.Label(p, text="Bu bölüm ilerleyen sürümlerde doldurulacaktır.",
+        tk.Label(p, text="This section will be filled in future releases.",
                  bg=SURFACE_LOWEST, fg=OUTLINE, font=f_body_md()).pack(padx=24)
 
     def _section_appearance(self):
         p = self._content_host
-        tk.Label(p, text="Görünüm & Tema", bg=SURFACE_LOWEST,
+        tk.Label(p, text="Appearance & Theme", bg=SURFACE_LOWEST,
                  fg=ON_SURFACE, font=f_headline_sm()).pack(padx=24, pady=24)
-        tk.Label(p, text="Bu bölüm ilerleyen sürümlerde doldurulacaktır.",
+        tk.Label(p, text="This section will be filled in future releases.",
                  bg=SURFACE_LOWEST, fg=OUTLINE, font=f_body_md()).pack(padx=24)
 
     def _section_editor(self):
         p = self._content_host
-        tk.Label(p, text="Not Düzenleyici", bg=SURFACE_LOWEST,
+        tk.Label(p, text="Note Editor", bg=SURFACE_LOWEST,
                  fg=ON_SURFACE, font=f_headline_sm()).pack(padx=24, pady=24)
-        tk.Label(p, text="Bu bölüm ilerleyen sürümlerde doldurulacaktır.",
+        tk.Label(p, text="This section will be filled in future releases.",
                  bg=SURFACE_LOWEST, fg=OUTLINE, font=f_body_md()).pack(padx=24)
 
     def _section_backup(self):
         p = self._content_host
-        tk.Label(p, text="Yedekleme & Dışa Aktar", bg=SURFACE_LOWEST,
+        tk.Label(p, text="Backup & Export", bg=SURFACE_LOWEST,
                  fg=ON_SURFACE, font=f_headline_sm()).pack(padx=24, pady=24)
-        tk.Label(p, text="Bu bölüm ilerleyen sürümlerde doldurulacaktır.",
+        tk.Label(p, text="This section will be filled in future releases.",
                  bg=SURFACE_LOWEST, fg=OUTLINE, font=f_body_md()).pack(padx=24)
 
     # ── Helpers ───────────────────────────────────────────────────────────────
@@ -380,13 +380,13 @@ class SettingsDialog(tk.Toplevel):
         self._pwd_ok.configure(text="")
 
         if not cur or not new:
-            self._pwd_err.configure(text="Tüm alanları doldurun.")
+            self._pwd_err.configure(text="Fill in all fields.")
             return
         if len(new) < 12:
-            self._pwd_err.configure(text="Yeni şifre en az 12 karakter olmalı.")
+            self._pwd_err.configure(text="New password must be at least 12 characters.")
             return
         if new != conf:
-            self._pwd_err.configure(text="Yeni şifreler eşleşmiyor.")
+            self._pwd_err.configure(text="New passwords do not match.")
             return
 
         from wontnote.crypto_core import unlock_with_password, change_password, VaultError, _secure_zero
@@ -394,7 +394,7 @@ class SettingsDialog(tk.Toplevel):
         try:
             temp_mk, _ = unlock_with_password(self.app.vault_bytes, cur)
         except VaultError:
-            self._pwd_err.configure(text="Mevcut şifre hatalı.")
+            self._pwd_err.configure(text="Current password is incorrect.")
             return
 
         try:
@@ -406,11 +406,11 @@ class SettingsDialog(tk.Toplevel):
             self._cur_pwd.clear()
             self._new_pwd.clear()
             self._conf_pwd.clear()
-            self._pwd_ok.configure(text="✓ Şifre başarıyla güncellendi.")
+            self._pwd_ok.configure(text="✓ Password updated successfully.")
         except VaultError:
             self._pwd_err.configure(text="Could not open vault.")
         except Exception as exc:
-            self._pwd_err.configure(text=f"Hata: {exc}")
+            self._pwd_err.configure(text=f"Error: {exc}")
         finally:
             _secure_zero(temp_mk)
 
@@ -427,15 +427,15 @@ class SettingsDialog(tk.Toplevel):
             self.app.vault_bytes = new_vault
             # Show new key
             win = tk.Toplevel(self)
-            win.title("Yeni Kurtarma Anahtarı")
+            win.title("New Recovery Key")
             win.resizable(True, True)
             win.minsize(440, 260)
             win.grab_set()
             win.configure(bg=SURFACE_LOW)
-            tk.Label(win, text="🗝 Yeni Kurtarma Anahtarınız",
+            tk.Label(win, text="🗝 Your New Recovery Key",
                      bg=SURFACE_LOW, fg=ON_SURFACE,
                      font=f_headline_sm()).pack(padx=24, pady=(16, 4))
-            tk.Label(win, text="Bu anahtarı güvenli bir yerde saklayın!",
+            tk.Label(win, text="Store this key in a safe place!",
                      bg=SURFACE_LOW, fg=ERROR,
                      font=f_body_sm()).pack(padx=24)
             e = tk.Entry(win, font=("Consolas", 11, "bold"), bg=SURFACE_HIGH,
@@ -446,12 +446,12 @@ class SettingsDialog(tk.Toplevel):
             e.configure(state="normal")
             e.insert(0, new_key)
             e.configure(state="readonly")
-            tk.Button(win, text="Kapat", command=win.destroy,
+            tk.Button(win, text="Close", command=win.destroy,
                        bg=PRIMARY, fg=ON_PRIMARY, relief="flat",
                        font=f_label_md(), cursor="hand2",
                        padx=12, pady=5).pack(pady=(0, 16))
-            self._rk_ok.configure(text="✓ Yeni kurtarma anahtarı oluşturuldu.")
+            self._rk_ok.configure(text="✓ New recovery key generated.")
         except VaultError:
             self._rk_err.configure(text="Could not open vault.")
         except Exception as exc:
-            self._rk_err.configure(text=f"Hata: {exc}")
+            self._rk_err.configure(text=f"Error: {exc}")

@@ -68,11 +68,11 @@ def test_rate_limit_covers_password_and_recovery(stored_vault,monkeypatch):
 
 def test_reset_requires_password_and_explicit_confirmation(stored_vault):
     api=WontNoteAPI();original=stored_vault.read_bytes()
-    assert not api.reset_vault("", "ONAYLIYORUM")["success"]
-    assert not api.reset_vault("wrong", "ONAYLIYORUM")["success"]
+    assert not api.reset_vault("", "CONFIRM")["success"]
+    assert not api.reset_vault("wrong", "CONFIRM")["success"]
     assert not api.reset_vault("test-password-12345", "")["success"]
     assert stored_vault.read_bytes()==original
-    assert api.reset_vault("test-password-12345", "ONAYLIYORUM")["success"]
+    assert api.reset_vault("test-password-12345", "CONFIRM")["success"]
     assert not stored_vault.exists()
 
 

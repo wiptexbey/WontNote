@@ -7,7 +7,7 @@ WontNote is an offline, local-first encrypted desktop note-taking application. N
 > **Windows 10/11 — No Python required**
 
 [![Latest Release](https://img.shields.io/github/v/release/wiptexbey/WontNote?style=for-the-badge&label=Latest%20Version&color=blue)](https://github.com/wiptexbey/WontNote/releases/latest)
-[![Download](https://img.shields.io/badge/Download-.zip-brightgreen?style=for-the-badge&logo=windows)](https://github.com/wiptexbey/WontNote/releases/latest/download/WontNote-v1.0.0-windows-x64.zip)
+[![Download](https://img.shields.io/badge/Download-.zip-brightgreen?style=for-the-badge&logo=windows)](https://github.com/wiptexbey/WontNote/releases/latest/download/WontNote-v1.0.1-windows-x64.zip)
 
 1. Click **Download .zip** above
 2. Extract it anywhere

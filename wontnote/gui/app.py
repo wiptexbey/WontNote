@@ -57,6 +57,6 @@ class App:
             pass
         return False
 
-    def run(self):
-        """Start the pywebview GUI event loop."""
+    def run(self) -> None:
+        """Start the pywebview event loop."""
         webview.start(debug=False)

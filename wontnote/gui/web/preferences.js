@@ -33,14 +33,14 @@ function syncPreferenceControls() {
   }
 }
 const shortcuts = [
- ['Ctrl+N','Yeni not'], ['Ctrl+S','Hemen kaydet'], ['Ctrl+F','Notlarda ara'],
- ['Ctrl+L','Kasayı kilitle'], ['Ctrl+,','Ayarları aç'], ['F1','Kısayol yardımını aç'],
- ['Ctrl+B','Kalın yazı'], ['Ctrl+I','İtalik yazı'], ['Ctrl+U','Altı çizili yazı'],
- ['Ctrl+Shift+X','Üstü çizili yazı'], ['Ctrl+Shift+7','Numaralı liste'], ['Ctrl+Shift+8','Madde işaretli liste'],
- ['Ctrl+Z','Geri al'], ['Ctrl+Y / Ctrl+Shift+Z','Yinele'],
- ['Ctrl+Shift+P','Notu sabitle / sabitlemeyi kaldır'], ['Ctrl+Shift+T','Not başlığına git'],
- ['Ctrl+Shift+E','Not metnine git'], ['Alt+↑ / Alt+↓','Listede önceki / sonraki not'],
- ['Delete','Yazı alanı dışında seçili notu sil'], ['Esc','Üstteki pencereyi kapat / aramayı temizle']
+ ['Ctrl+N','Create a new note'], ['Ctrl+S','Save now'], ['Ctrl+F','Search notes'],
+ ['Ctrl+L','Lock the vault'], ['Ctrl+,','Open settings'], ['F1','Open shortcut help'],
+ ['Ctrl+B','Bold'], ['Ctrl+I','Italic'], ['Ctrl+U','Underline'],
+ ['Ctrl+Shift+X','Strikethrough'], ['Ctrl+Shift+7','Numbered list'], ['Ctrl+Shift+8','Bulleted list'],
+ ['Ctrl+Z','Undo'], ['Ctrl+Y / Ctrl+Shift+Z','Redo'],
+ ['Ctrl+Shift+P','Pin or unpin note'], ['Ctrl+Shift+T','Go to note title'],
+ ['Ctrl+Shift+E','Go to note body'], ['Alt+↑ / Alt+↓','Previous / next note in list'],
+ ['Delete','Delete selected note outside the editor'], ['Esc','Close topmost window / clear search']
 ];
 function renderShortcuts() {
   const host=document.getElementById('shortcutList');host.replaceChildren();

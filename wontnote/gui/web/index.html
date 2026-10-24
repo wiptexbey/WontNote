@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr" id="app-root">
+<html lang="en" id="app-root">
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -42,30 +42,30 @@
         <div class="w-11 h-11 rounded-2xl bg-primary-fixed flex items-center justify-center text-primary shadow-[0_4px_16px_rgba(99,91,255,0.2)]">
           <span class="material-symbols-outlined text-[22px]" style="font-variation-settings:'FILL' 1;">lock</span>
         </div>
-        <h1 class="font-headline-md text-[20px] text-on-surface font-semibold mt-1">Kasanı oluştur</h1>
-        <p class="font-body-sm text-[12px] text-on-surface-variant">Ana şifreni belirle, notların güvende kalsın.</p>
+        <h1 class="font-headline-md text-[20px] text-on-surface font-semibold mt-1">Create Your Vault</h1>
+        <p class="font-body-sm text-[12px] text-on-surface-variant">Set a master password to keep your notes safe.</p>
       </div>
 
       <form class="flex flex-col gap-3" id="setupForm" onsubmit="event.preventDefault(); handleSetupSubmit();">
         <div class="flex flex-col gap-1">
           <div class="flex items-center justify-between">
-            <label class="font-label-md text-[12.5px] text-on-surface font-medium" for="setupPwd">Şifre</label>
+            <label class="font-label-md text-[12.5px] text-on-surface font-medium" for="setupPwd">Password</label>
             <span class="font-mono-shortcut text-[10.5px] text-on-surface-variant" id="setupStrengthBadge"></span>
           </div>
           <div class="relative flex items-center bg-surface-container-low rounded-lg focus-within:shadow-[0_0_0_2px_#635bff] transition-shadow">
             <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[16px]">key</span>
-            <input autocomplete="new-password" class="w-full bg-surface-container-low text-on-surface font-body-md text-[13px] rounded-lg py-2.5 pl-9 pr-9 outline-none placeholder:text-outline" id="setupPwd" placeholder="En az 12 karakter" type="password">
-            <button aria-label="Göster" class="absolute right-2.5 w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-on-surface rounded transition-colors" onclick="togglePwd('setupPwd',this)" type="button">
+            <input autocomplete="new-password" class="w-full bg-surface-container-low text-on-surface font-body-md text-[13px] rounded-lg py-2.5 pl-9 pr-9 outline-none placeholder:text-outline" id="setupPwd" placeholder="At least 12 characters" type="password">
+            <button aria-label="Show" class="absolute right-2.5 w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-on-surface rounded transition-colors" onclick="togglePwd('setupPwd',this)" type="button">
               <span class="material-symbols-outlined text-[16px]">visibility</span>
             </button>
           </div>
         </div>
         <div class="flex flex-col gap-1">
-          <label class="font-label-md text-[12.5px] text-on-surface font-medium" for="setupConf">Doğrulama</label>
+          <label class="font-label-md text-[12.5px] text-on-surface font-medium" for="setupConf">Confirm</label>
           <div class="relative flex items-center bg-surface-container-low rounded-lg focus-within:shadow-[0_0_0_2px_#635bff] transition-shadow">
             <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[16px]">check_circle</span>
-            <input autocomplete="new-password" class="w-full bg-surface-container-low text-on-surface font-body-md text-[13px] rounded-lg py-2.5 pl-9 pr-9 outline-none placeholder:text-outline" id="setupConf" placeholder="Şifreyi tekrar girin" type="password">
-            <button aria-label="Göster" class="absolute right-2.5 w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-on-surface rounded transition-colors" onclick="togglePwd('setupConf',this)" type="button">
+            <input autocomplete="new-password" class="w-full bg-surface-container-low text-on-surface font-body-md text-[13px] rounded-lg py-2.5 pl-9 pr-9 outline-none placeholder:text-outline" id="setupConf" placeholder="Repeat your password" type="password">
+            <button aria-label="Show" class="absolute right-2.5 w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-on-surface rounded transition-colors" onclick="togglePwd('setupConf',this)" type="button">
               <span class="material-symbols-outlined text-[16px]">visibility</span>
             </button>
           </div>
@@ -74,15 +74,15 @@
         <div class="flex items-center gap-4 px-0.5">
           <div class="flex items-center gap-1 transition-colors text-[11px]" id="setupRuleLen">
             <span class="material-symbols-outlined text-[12px] text-outline">radio_button_unchecked</span>
-            <span class="text-on-surface-variant">12+ karakter</span>
+            <span class="text-on-surface-variant">12+ characters</span>
           </div>
           <div class="flex items-center gap-1 transition-colors text-[11px]" id="setupRuleChar">
             <span class="material-symbols-outlined text-[12px] text-outline">radio_button_unchecked</span>
-            <span class="text-on-surface-variant">Harf &amp; rakam</span>
+            <span class="text-on-surface-variant">Letter &amp; number</span>
           </div>
           <div class="flex items-center gap-1 transition-colors text-[11px]" id="setupRuleMatch">
             <span class="material-symbols-outlined text-[12px] text-outline">radio_button_unchecked</span>
-            <span class="text-on-surface-variant">Eşleşiyor</span>
+            <span class="text-on-surface-variant">Passwords match</span>
           </div>
         </div>
 
@@ -92,7 +92,7 @@
         </div>
 
         <button class="btn-spring w-full bg-primary hover:bg-secondary text-on-primary text-[13px] font-medium py-2.5 px-6 rounded-lg transition-all flex items-center justify-center gap-2 shadow-[0_2px_10px_rgba(99,91,255,0.24)] cursor-pointer" id="setupSubmitBtn" type="submit">
-          <span>Kasayı Oluştur</span>
+          <span>Create Vault</span>
           <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
         </button>
       </form>
@@ -107,14 +107,14 @@
         <div class="w-12 h-12 rounded-2xl bg-primary-fixed flex items-center justify-center text-primary shadow-[0_4px_16px_rgba(99,91,255,0.2)] mb-1">
           <span class="material-symbols-outlined text-[24px]" style="font-variation-settings:'FILL' 1;">lock</span>
         </div>
-        <h1 class="font-headline-md text-[19px] text-on-surface font-semibold">Hoş geldin</h1>
-        <p class="font-body-sm text-[12px] text-on-surface-variant">Şifreni girerek kasanı aç.</p>
+        <h1 class="font-headline-md text-[19px] text-on-surface font-semibold">Welcome back</h1>
+        <p class="font-body-sm text-[12px] text-on-surface-variant">Enter your password to unlock your vault.</p>
       </div>
 
       <form class="px-6 pb-6 flex flex-col gap-3" id="loginForm" onsubmit="event.preventDefault(); handleLoginSubmit();">
         <div class="flex flex-col gap-1">
           <div class="flex items-center justify-between">
-            <label class="font-label-md text-[12.5px] font-medium text-on-surface" for="loginPassword">Şifre</label>
+            <label class="font-label-md text-[12.5px] font-medium text-on-surface" for="loginPassword">Password</label>
             <span class="hidden items-center gap-1 text-[11px] text-error" id="loginCapsWarning">
               <span class="material-symbols-outlined text-[12px]">warning</span>Caps Lock
             </span>
@@ -123,8 +123,8 @@
             <span class="absolute left-3 text-tertiary pointer-events-none">
               <span class="material-symbols-outlined text-[16px]">key</span>
             </span>
-            <input autocomplete="current-password" autofocus class="w-full pl-9 pr-9 py-2.5 bg-surface-container-low text-on-surface placeholder:text-outline text-[13px] rounded-lg outline-none transition-all focus:bg-surface-container-lowest focus:shadow-[0_0_0_2px_#635bff]" id="loginPassword" placeholder="Uygulama şifreniz..." type="password">
-            <button aria-label="Göster" class="absolute right-3 text-tertiary hover:text-on-surface transition-colors rounded" onclick="togglePwd('loginPassword',this)" type="button">
+            <input autocomplete="current-password" autofocus class="w-full pl-9 pr-9 py-2.5 bg-surface-container-low text-on-surface placeholder:text-outline text-[13px] rounded-lg outline-none transition-all focus:bg-surface-container-lowest focus:shadow-[0_0_0_2px_#635bff]" id="loginPassword" placeholder="Your vault password..." type="password">
+            <button aria-label="Show" class="absolute right-3 text-tertiary hover:text-on-surface transition-colors rounded" onclick="togglePwd('loginPassword',this)" type="button">
               <span class="material-symbols-outlined text-[16px]">visibility</span>
             </button>
           </div>
@@ -132,19 +132,19 @@
 
         <div class="hidden items-center gap-2 p-2.5 rounded-lg bg-error-container text-on-error-container text-[12px]" id="loginErrorMessage">
           <span class="material-symbols-outlined text-[15px]">error</span>
-          <span id="loginErrorText">Hatalı şifre.</span>
+          <span id="loginErrorText">Incorrect password.</span>
         </div>
 
         <button class="btn-spring w-full py-2.5 bg-primary text-on-primary text-[13px] font-medium rounded-lg shadow-sm hover:bg-secondary transition-all flex items-center justify-center gap-2 cursor-pointer" id="loginSubmitBtn" type="submit">
           <span class="material-symbols-outlined text-[16px]">lock_open</span>
-          <span>Kilidi Aç</span>
+          <span>Unlock</span>
         </button>
 
         <div class="flex items-center justify-between text-[11.5px] pt-0.5">
           <button class="text-primary hover:underline inline-flex items-center gap-1 transition-colors" onclick="openRecoveryModal()" type="button">
-            <span class="material-symbols-outlined text-[13px]">shield_person</span>Kurtarma Anahtarı
+            <span class="material-symbols-outlined text-[13px]">shield_person</span>Recovery Key
           </button>
-          <button class="text-error hover:underline transition-colors cursor-pointer" onclick="openResetModal()" type="button">Kasayı Sıfırla</button>
+          <button class="text-error hover:underline transition-colors cursor-pointer" onclick="openResetModal()" type="button">Reset Vault</button>
         </div>
       </form>
     </div>
@@ -160,11 +160,11 @@
         <span class="text-on-surface font-semibold text-[13px]">WontNote</span>
       </div>
       <div class="flex items-center gap-0.5">
-        <button onclick="handleLockVault()" title="Kilitle (Ctrl+L)" class="btn-spring flex items-center gap-1 px-2 py-0.5 rounded text-on-surface-variant hover:bg-error-container hover:text-error transition-colors text-[11.5px] cursor-pointer">
+        <button onclick="handleLockVault()" title="Lock (Ctrl+L)" class="btn-spring flex items-center gap-1 px-2 py-0.5 rounded text-on-surface-variant hover:bg-error-container hover:text-error transition-colors text-[11.5px] cursor-pointer">
           <span class="material-symbols-outlined text-[13px]">lock</span>
-          <span>Kilitle</span>
+          <span>Lock</span>
         </button>
-        <button onclick="openSettingsModal()" title="Ayarlar (Ctrl+,)" class="btn-spring p-1.5 rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors cursor-pointer">
+        <button onclick="openSettingsModal()" title="Settings (Ctrl+,)" class="btn-spring p-1.5 rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors cursor-pointer">
           <span class="material-symbols-outlined text-[15px]">settings</span>
         </button>
       </div>
@@ -179,7 +179,7 @@
           <button onclick="handleNewNote()" class="btn-spring w-full flex items-center justify-between px-2 py-1.5 bg-primary text-on-primary rounded text-[11.5px] shadow-xs hover:bg-secondary transition-all cursor-pointer mb-1" type="button">
             <span class="flex items-center gap-1.5">
               <span class="material-symbols-outlined text-[15px]">add</span>
-              <span class="font-medium">Yeni not</span>
+              <span class="font-medium">New note</span>
             </span>
             <span class="font-mono-shortcut text-[10px] px-1 rounded bg-on-primary/20">Ctrl+N</span>
           </button>
@@ -189,21 +189,21 @@
               <div class="active-indicator absolute left-0 top-1 bottom-1 w-0.5 bg-primary rounded-r"></div>
               <span class="flex items-center gap-1.5 pl-1">
                 <span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings:'FILL' 1;">description</span>
-                <span>Tüm notlar</span>
+                <span>All notes</span>
               </span>
               <span class="font-mono-shortcut text-[10px] px-1.5 rounded-full bg-primary/10 text-primary font-semibold" id="countAllNotes">0</span>
             </button>
             <button onclick="switchViewFilter('pinned')" class="sidebar-btn flex items-center justify-between px-2 py-1 rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface text-[11.5px] transition-colors" data-view="pinned">
               <span class="flex items-center gap-1.5 pl-1">
                 <span class="material-symbols-outlined text-[15px] text-tertiary">push_pin</span>
-                <span>Sabitlenenler</span>
+                <span>Pinned</span>
               </span>
               <span class="font-mono-shortcut text-[10px] text-outline" id="countPinnedNotes">0</span>
             </button>
             <button onclick="switchViewFilter('trash')" class="sidebar-btn flex items-center justify-between px-2 py-1 rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface text-[11.5px] transition-colors" data-view="trash">
               <span class="flex items-center gap-1.5 pl-1">
                 <span class="material-symbols-outlined text-[15px] text-tertiary">delete</span>
-                <span>Çöp Kutusu</span>
+                <span>Trash</span>
               </span>
               <span class="font-mono-shortcut text-[10px] text-outline" id="countTrashNotes">0</span>
             </button>
@@ -212,18 +212,18 @@
           <div class="border-t border-outline-variant/30 my-1"></div>
 
           <div class="px-2 py-0.5">
-            <span class="text-[10px] uppercase tracking-wider text-outline font-semibold">Klasörler</span>
+            <span class="text-[10px] uppercase tracking-wider text-outline font-semibold">Folders</span>
           </div>
           <div id="sidebarFolders" class="flex flex-col gap-0.5"></div>
         </div>
 
         <div class="flex flex-col gap-0.5 pt-1 border-t border-outline-variant/30">
           <button onclick="openSettingsModal()" class="w-full flex items-center justify-between px-2 py-1 rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface text-[11.5px] transition-colors" type="button">
-            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">settings</span><span>Ayarlar</span></span>
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">settings</span><span>Settings</span></span>
             <span class="font-mono-shortcut text-[10px] text-outline">Ctrl+,</span>
           </button>
           <button onclick="handleLockVault()" class="w-full flex items-center justify-between px-2 py-1 rounded text-on-surface-variant hover:bg-error-container hover:text-error text-[11.5px] transition-colors" type="button">
-            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">lock_clock</span><span>Kilitle</span></span>
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">lock_clock</span><span>Lock</span></span>
             <span class="font-mono-shortcut text-[10px] text-outline">Ctrl+L</span>
           </button>
         </div>
@@ -234,17 +234,17 @@
         <div class="p-2 border-b border-outline-variant/30 flex flex-col gap-1.5 bg-surface-container-lowest flex-shrink-0">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1.5">
-              <h2 class="text-[13.5px] font-semibold text-on-surface" id="currentViewTitle">Tüm notlar</h2>
-              <span class="text-[10.5px] px-1.5 rounded-full bg-surface-container-high text-on-surface-variant font-medium" id="notesCountBadge">0 not</span>
+              <h2 class="text-[13.5px] font-semibold text-on-surface" id="currentViewTitle">All notes</h2>
+              <span class="text-[10.5px] px-1.5 rounded-full bg-surface-container-high text-on-surface-variant font-medium" id="notesCountBadge">0 notes</span>
             </div>
             <button id="trashBulkDeleteBtn" onclick="handleEmptyTrash()" class="hidden items-center gap-1 px-2 py-0.5 rounded bg-error/10 text-error hover:bg-error hover:text-on-error text-[10.5px] transition-all btn-spring cursor-pointer">
               <span class="material-symbols-outlined text-[12px]">delete_sweep</span>
-              <span>Tümünü Sil</span>
+              <span>Empty Trash</span>
             </button>
           </div>
           <div class="relative flex items-center">
             <span class="material-symbols-outlined absolute left-2 text-outline text-[13px]">search</span>
-            <input id="searchInput" oninput="handleSearch(this.value)" class="w-full pl-6 pr-7 py-1 rounded bg-surface-container text-on-surface placeholder:text-outline text-[11.5px] focus:outline-none focus:bg-surface focus:ring-1 focus:ring-primary" placeholder="Notlarda ara..." type="text">
+            <input id="searchInput" oninput="handleSearch(this.value)" class="w-full pl-6 pr-7 py-1 rounded bg-surface-container text-on-surface placeholder:text-outline text-[11.5px] focus:outline-none focus:bg-surface focus:ring-1 focus:ring-primary" placeholder="Search notes..." type="text">
             <span class="absolute right-2 text-outline font-mono-shortcut text-[10px]">⌘F</span>
           </div>
         </div>
@@ -258,11 +258,11 @@
           <div class="w-12 h-12 rounded-2xl bg-primary-fixed/40 text-primary flex items-center justify-center mb-3">
             <span class="material-symbols-outlined text-[24px]">note_alt</span>
           </div>
-          <h2 class="text-[17px] font-semibold text-on-surface mb-1">Güvenli Not Defteri</h2>
-          <p class="text-[12px] text-on-surface-variant max-w-xs mb-5 leading-relaxed">Notlarını şifreli ve yerel sakla.</p>
+          <h2 class="text-[17px] font-semibold text-on-surface mb-1">Secure Notepad</h2>
+          <p class="text-[12px] text-on-surface-variant max-w-xs mb-5 leading-relaxed">Your notes, encrypted and stored locally.</p>
           <button onclick="handleNewNote()" class="btn-spring px-5 py-2 rounded-lg bg-primary text-on-primary text-[12.5px] font-medium shadow-sm hover:bg-secondary flex items-center gap-2 cursor-pointer" type="button">
             <span class="material-symbols-outlined text-[15px]">add</span>
-            <span>Yeni Not</span>
+            <span>New Note</span>
             <span class="font-mono-shortcut text-[10px] px-1.5 py-0.5 rounded bg-on-primary/20">Ctrl+N</span>
           </button>
           <div class="grid grid-cols-3 gap-2 max-w-xs w-full text-left mt-7">
@@ -270,19 +270,19 @@
               <div class="flex items-center gap-1 text-primary text-[10.5px] font-semibold">
                 <span class="material-symbols-outlined text-[12px]">edit_note</span><span>Ctrl+N</span>
               </div>
-              <span class="text-[10.5px] text-on-surface-variant">Yeni not</span>
+              <span class="text-[10.5px] text-on-surface-variant">New note</span>
             </div>
             <div class="p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/30 flex flex-col gap-1">
               <div class="flex items-center gap-1 text-secondary text-[10.5px] font-semibold">
                 <span class="material-symbols-outlined text-[12px]">search</span><span>Ctrl+F</span>
               </div>
-              <span class="text-[10.5px] text-on-surface-variant">Arama</span>
+              <span class="text-[10.5px] text-on-surface-variant">Search</span>
             </div>
             <div class="p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/30 flex flex-col gap-1">
               <div class="flex items-center gap-1 text-tertiary text-[10.5px] font-semibold">
                 <span class="material-symbols-outlined text-[12px]">lock</span><span>Ctrl+L</span>
               </div>
-              <span class="text-[10.5px] text-on-surface-variant">Kilitle</span>
+              <span class="text-[10.5px] text-on-surface-variant">Lock</span>
             </div>
           </div>
         </div>
@@ -293,29 +293,29 @@
           <div class="h-9 px-3 bg-surface-container-lowest border-b border-outline-variant/30 flex items-center justify-between select-none z-10 flex-shrink-0">
             <div class="flex items-center gap-1.5">
               <div class="flex items-center gap-1 text-[11px]">
-                <span class="text-tertiary" id="editorFolderBreadcrumb">Kişisel</span>
+                <span class="text-tertiary" id="editorFolderBreadcrumb">Personal</span>
                 <span class="material-symbols-outlined text-[11px] text-outline">chevron_right</span>
-                <span class="text-primary font-medium" id="editorTitleBreadcrumb">Başlıksız</span>
+                <span class="text-primary font-medium" id="editorTitleBreadcrumb">Untitled</span>
               </div>
               <span class="text-outline-variant text-[11px]">|</span>
               <button onclick="handleTogglePin()" id="editorPinBtn" class="flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10.5px] hover:bg-primary-fixed-dim transition-colors btn-spring cursor-pointer" type="button">
                 <span class="material-symbols-outlined text-[11px]">push_pin</span>
-                <span id="editorPinLabel">Sabitle</span>
+                <span id="editorPinLabel">Pin</span>
               </button>
               <select id="editorFolderSelect" onchange="handleFolderChange(this.value)" class="bg-surface-container-low text-[10.5px] text-on-surface-variant px-1.5 py-0.5 rounded outline-none border border-outline-variant/30 cursor-pointer">
-                <option value="Kişisel">Kişisel</option>
-                <option value="Okul & Eğitim">Okul &amp; Eğitim</option>
-                <option value="İş & Projeler">İş &amp; Projeler</option>
-                <option value="Fikirler & Taslaklar">Fikirler &amp; Taslaklar</option>
+                <option value="Personal">Personal</option>
+                <option value="School & Education">School &amp; Education</option>
+                <option value="Work & Projects">Work &amp; Projects</option>
+                <option value="Ideas & Drafts">Ideas &amp; Drafts</option>
               </select>
             </div>
             <div class="flex items-center gap-2">
               <div class="flex items-center gap-1 text-[10.5px] font-mono-shortcut">
                 <span class="w-1.5 h-1.5 rounded-full bg-[#10b981]" id="saveStatusDot"></span>
-                <span class="text-[#047857] font-medium" id="saveStatusText">Kaydedildi</span>
+                <span class="text-[#047857] font-medium" id="saveStatusText">Saved</span>
               </div>
-              <button id="restoreNoteBtn" type="button" onclick="handleRestoreNote()" class="hidden text-primary text-[11px]">Geri yükle</button>
-              <button onclick="handleDeleteCurrentNote()" class="btn-spring p-1 rounded text-outline hover:text-error hover:bg-error-container transition-colors cursor-pointer" title="Sil (Delete)" type="button">
+              <button id="restoreNoteBtn" type="button" onclick="handleRestoreNote()" class="hidden text-primary text-[11px]">Restore</button>
+              <button onclick="handleDeleteCurrentNote()" class="btn-spring p-1 rounded text-outline hover:text-error hover:bg-error-container transition-colors cursor-pointer" title="Delete" type="button">
                 <span class="material-symbols-outlined text-[15px]">delete</span>
               </button>
             </div>
@@ -324,35 +324,35 @@
           <!-- Ribbon -->
           <div class="h-7 px-3 bg-surface-container-low border-b border-outline-variant/30 flex items-center justify-between text-on-surface-variant select-none flex-shrink-0">
             <div class="flex items-center gap-0.5">
-              <select id="editorFontSelect" aria-label="Not yazı tipi" onchange="applyFont(this.value, true)"></select>
-              <select id="editorFontSize" aria-label="Not yazı boyutu" onchange="applyFontSize(this.value)"><option>12</option><option selected>14</option><option>16</option><option>18</option><option>20</option><option>24</option><option>28</option><option>32</option></select>
-              <button onclick="execFormat('bold')" class="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container text-on-surface font-bold text-[11px] btn-spring" title="Kalın">B</button>
-              <button onclick="execFormat('italic')" class="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container text-on-surface italic text-[11px] btn-spring" title="İtalik">I</button>
-              <button onclick="execFormat('underline')" class="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container text-on-surface underline text-[11px] btn-spring" title="Altı çizili">U</button>
-              <button onclick="execFormat('strikeThrough')" class="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container text-on-surface line-through text-[11px] btn-spring" title="Üstü çizili">S</button>
+              <select id="editorFontSelect" aria-label="Note font" onchange="applyFont(this.value, true)"></select>
+              <select id="editorFontSize" aria-label="Note font size" onchange="applyFontSize(this.value)"><option>12</option><option selected>14</option><option>16</option><option>18</option><option>20</option><option>24</option><option>28</option><option>32</option></select>
+              <button onclick="execFormat('bold')" class="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container text-on-surface font-bold text-[11px] btn-spring" title="Bold">B</button>
+              <button onclick="execFormat('italic')" class="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container text-on-surface italic text-[11px] btn-spring" title="Italic">I</button>
+              <button onclick="execFormat('underline')" class="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container text-on-surface underline text-[11px] btn-spring" title="Underline">U</button>
+              <button onclick="execFormat('strikeThrough')" class="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container text-on-surface line-through text-[11px] btn-spring" title="Strikethrough">S</button>
               <div class="w-px h-3 bg-outline-variant/40 mx-1"></div>
-              <button onclick="execFormat('justifyLeft')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Sola">
+              <button onclick="execFormat('justifyLeft')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Align left">
                 <span class="material-symbols-outlined text-[13px]">format_align_left</span>
               </button>
-              <button onclick="execFormat('justifyCenter')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Ortala">
+              <button onclick="execFormat('justifyCenter')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Center">
                 <span class="material-symbols-outlined text-[13px]">format_align_center</span>
               </button>
-              <button onclick="execFormat('justifyRight')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Sağa">
+              <button onclick="execFormat('justifyRight')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Align right">
                 <span class="material-symbols-outlined text-[13px]">format_align_right</span>
               </button>
               <div class="w-px h-3 bg-outline-variant/40 mx-1"></div>
-              <button onclick="execFormat('insertUnorderedList')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Liste">
+              <button onclick="execFormat('insertUnorderedList')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Bullet list">
                 <span class="material-symbols-outlined text-[13px]">format_list_bulleted</span>
               </button>
-              <button onclick="execFormat('insertOrderedList')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Numaralı">
+              <button onclick="execFormat('insertOrderedList')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Numbered list">
                 <span class="material-symbols-outlined text-[13px]">format_list_numbered</span>
               </button>
             </div>
             <div class="flex items-center gap-0.5">
-              <button onclick="execFormat('undo')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Geri Al">
+              <button onclick="execFormat('undo')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Undo">
                 <span class="material-symbols-outlined text-[13px]">undo</span>
               </button>
-              <button onclick="execFormat('redo')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Yinele">
+              <button onclick="execFormat('redo')" class="p-0.5 rounded hover:bg-surface-container flex items-center btn-spring" title="Redo">
                 <span class="material-symbols-outlined text-[13px]">redo</span>
               </button>
             </div>
@@ -360,19 +360,19 @@
 
           <!-- Canvas -->
           <div class="flex-1 overflow-y-auto px-8 py-5 bg-surface-container-lowest max-w-3xl mx-auto w-full flex flex-col">
-            <input id="editorTitleInput" maxlength="500" oninput="handleTitleInput(this.value)" class="w-full text-[21px] text-on-surface font-semibold bg-transparent border-none focus:outline-none mb-1.5 leading-snug" placeholder="Başlıksız Not" type="text">
+            <input id="editorTitleInput" maxlength="500" oninput="handleTitleInput(this.value)" class="w-full text-[21px] text-on-surface font-semibold bg-transparent border-none focus:outline-none mb-1.5 leading-snug" placeholder="Untitled Note" type="text">
             <div class="flex items-center gap-2 font-mono-shortcut text-[10px] text-outline pb-3 mb-3 border-b border-outline-variant/30">
-              <span id="editorFolderMeta">Kişisel</span>
+              <span id="editorFolderMeta">Personal</span>
               <span>•</span>
-              <span id="editorModifiedMeta">Bugün</span>
+              <span id="editorModifiedMeta">Today</span>
               <span>•</span>
-              <span id="editorWordCharCount">0 kelime</span>
+              <span id="editorWordCharCount">0 words</span>
             </div>
-            <div id="editorContent" contenteditable="true" data-placeholder="Yazmaya başlayın..." oninput="handleContentInput()" class="flex-1 outline-none text-on-surface text-[13.5px] leading-relaxed min-h-[260px] select-text"></div>
+            <div id="editorContent" contenteditable="true" data-placeholder="Start writing..." oninput="handleContentInput()" class="flex-1 outline-none text-on-surface text-[13.5px] leading-relaxed min-h-[260px] select-text"></div>
           </div>
 
           <div class="h-5 px-3 bg-surface-container-low border-t border-outline-variant/30 flex items-center justify-between font-mono-shortcut text-[10px] text-outline select-none flex-shrink-0">
-            <span id="footerWordCharCount">0 kelime, 0 karakter</span>
+            <span id="footerWordCharCount">0 words, 0 chars</span>
             <span>UTF-8</span>
           </div>
         </div>
@@ -382,12 +382,12 @@
 
 
   <!-- MODAL: SETTINGS -->
-  <div id="modal-settings" role="dialog" aria-modal="true" aria-label="Ayarlar" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-inverse-surface/40 backdrop-blur-[2px]">
+  <div id="modal-settings" role="dialog" aria-modal="true" aria-label="Settings" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-inverse-surface/40 backdrop-blur-[2px]">
     <div class="w-full max-w-[820px] bg-surface-container-lowest rounded-xl shadow-2xl flex flex-col overflow-hidden max-h-[88vh] animate-modal-pop settings-dialog">
       <div class="h-9 bg-surface-container-high px-4 flex items-center justify-between select-none flex-shrink-0">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-primary text-[16px]">settings</span>
-          <span class="text-[13px] text-on-surface font-semibold">Ayarlar</span>
+          <span class="text-[13px] text-on-surface font-semibold">Settings</span>
         </div>
         <button onclick="closeSettingsModal()" class="btn-spring h-9 w-9 flex items-center justify-center hover:bg-error hover:text-on-error rounded transition-colors text-on-surface cursor-pointer">
           <span class="material-symbols-outlined text-[13px]">close</span>
@@ -397,20 +397,20 @@
       <div class="flex flex-1 min-h-0 overflow-hidden">
         <!-- Left nav -->
         <aside class="w-48 bg-surface-container-low flex flex-col p-1.5 border-r border-outline-variant/30 flex-shrink-0 gap-0.5">
-          <button onclick="switchSettingsTab('general')" class="settings-tab-btn settings-nav" data-tab="general">Genel ve Düzenleyici</button>
+          <button onclick="switchSettingsTab('general')" class="settings-tab-btn settings-nav" data-tab="general">General &amp; Editor</button>
           <button onclick="switchSettingsTab('security')" class="settings-tab-btn w-full flex items-center gap-2 px-3 py-2 rounded text-left bg-surface-container-high text-primary font-semibold shadow-sm relative" data-tab="security">
             <span class="absolute left-0 top-1.5 bottom-1.5 w-0.5 bg-primary rounded-r"></span>
             <span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings:'FILL' 1;">security</span>
-            <span class="text-[12.5px] text-on-surface">Güvenlik</span>
+            <span class="text-[12.5px] text-on-surface">Security</span>
           </button>
           <button onclick="switchSettingsTab('appearance')" class="settings-tab-btn w-full flex items-center gap-2 px-3 py-2 rounded text-left text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-tab="appearance">
             <span class="material-symbols-outlined text-[16px] text-tertiary">palette</span>
-            <span class="text-[12.5px]">Görünüm</span>
+            <span class="text-[12.5px]">Appearance</span>
           </button>
-          <button onclick="switchSettingsTab('shortcuts')" class="settings-tab-btn settings-nav" data-tab="shortcuts">Klavye Kısayolları</button>
+          <button onclick="switchSettingsTab('shortcuts')" class="settings-tab-btn settings-nav" data-tab="shortcuts">Keyboard Shortcuts</button>
           <button onclick="switchSettingsTab('about')" class="settings-tab-btn w-full flex items-center gap-2 px-3 py-2 rounded text-left text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-tab="about">
             <span class="material-symbols-outlined text-[16px] text-outline">info</span>
-            <span class="text-[12.5px]">Hakkında</span>
+            <span class="text-[12.5px]">About</span>
           </button>
         </aside>
 
@@ -419,69 +419,69 @@
 
           <div id="settingsSecGeneral" class="hidden flex-col gap-3">
             <section class="settings-card">
-              <h3>Not yazma</h3>
-              <label class="setting-row">Otomatik kayıt gecikmesi<select id="prefAutosave" aria-label="Otomatik kayıt gecikmesi" onchange="setPreference('autosave',this.value)"><option value="300">Hızlı · 0,3 saniye</option><option value="800">Standart · 0,8 saniye</option><option value="1500">Rahat · 1,5 saniye</option></select></label>
-              <label class="setting-row">Satır aralığı<select id="prefLineHeight" aria-label="Satır aralığı" onchange="setPreference('line_height',this.value)"><option value="1.6">Sıkı</option><option value="1.9">Standart</option><option value="2.2">Geniş</option></select></label>
-              <label class="setting-row">Yazım denetimi<input id="prefSpellcheck" aria-label="Yazım denetimi" type="checkbox" onchange="setPreference('spellcheck',this.checked)"></label>
-              <label class="setting-row">Kelime ve karakter sayısını göster<input id="prefWordCount" aria-label="Kelime ve karakter sayısını göster" type="checkbox" onchange="setPreference('word_count',this.checked)"></label>
-              <p class="settings-hint">Notlar otomatik kaydedilir. Ctrl+S ile beklemeden kaydedebilirsiniz. Yazı tipi ve boyutu not araç çubuğundadır.</p>
+              <h3>Note Writing</h3>
+              <label class="setting-row">Autosave delay<select id="prefAutosave" aria-label="Autosave delay" onchange="setPreference('autosave',this.value)"><option value="300">Fast · 0.3 s</option><option value="800">Standard · 0.8 s</option><option value="1500">Relaxed · 1.5 s</option></select></label>
+              <label class="setting-row">Line spacing<select id="prefLineHeight" aria-label="Line spacing" onchange="setPreference('line_height',this.value)"><option value="1.6">Compact</option><option value="1.9">Standard</option><option value="2.2">Relaxed</option></select></label>
+              <label class="setting-row">Spell check<input id="prefSpellcheck" aria-label="Spell check" type="checkbox" onchange="setPreference('spellcheck',this.checked)"></label>
+              <label class="setting-row">Show word &amp; character count<input id="prefWordCount" aria-label="Show word and character count" type="checkbox" onchange="setPreference('word_count',this.checked)"></label>
+              <p class="settings-hint">Notes are autosaved. Press Ctrl+S to save immediately. Font and size are in the editor toolbar.</p>
             </section>
           </div>
           <div id="settingsSecShortcuts" class="hidden flex-col gap-3">
-            <section class="settings-card"><h3>Klavye ile hızlı kullanım</h3><p class="settings-hint">Kısayollar kasa açıkken çalışır. Düzenleme kısayolları yalnızca not metnini etkiler.</p><div id="shortcutList"></div></section>
+            <section class="settings-card"><h3>Quick Keyboard Reference</h3><p class="settings-hint">Shortcuts work while the vault is unlocked. Editing shortcuts only affect note content.</p><div id="shortcutList"></div></section>
           </div>
           <!-- Security tab -->
           <div id="settingsSecSecurity" class="flex flex-col gap-3">
-            <section class="settings-card"><h3>Oturum koruması</h3>
-              <label class="setting-row">Hareketsizlikte kilitle<select id="prefAutoLock" aria-label="Hareketsizlikte kilitle" onchange="setPreference('auto_lock',this.value)"><option value="1">1 dakika</option><option value="5">5 dakika</option><option value="15">15 dakika</option><option value="30">30 dakika</option><option value="0">Kapalı</option></select></label>
-              <label class="setting-row">Simge durumuna küçültünce kilitle<input id="prefLockMinimize" aria-label="Simge durumuna küçültünce kilitle" type="checkbox" onchange="setPreference('lock_minimize',this.checked)"></label>
-              <p class="settings-hint">Kilitlemeden önce bekleyen değişiklikler kaydedilir. Beş başarısız girişten sonra denemelere kısa bir bekleme süresi uygulanır.</p>
+            <section class="settings-card"><h3>Session Protection</h3>
+              <label class="setting-row">Lock on inactivity<select id="prefAutoLock" aria-label="Lock on inactivity" onchange="setPreference('auto_lock',this.value)"><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="0">Off</option></select></label>
+              <label class="setting-row">Lock when minimized<input id="prefLockMinimize" aria-label="Lock when minimized" type="checkbox" onchange="setPreference('lock_minimize',this.checked)"></label>
+              <p class="settings-hint">Pending changes are saved before locking. After five failed attempts a short cooldown is applied.</p>
             </section>
             <section class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/30 flex flex-col gap-3">
               <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-[16px] text-primary">key</span>
-                <h3 class="text-[13px] font-semibold text-on-surface">Şifreyi Değiştir</h3>
+                <h3 class="text-[13px] font-semibold text-on-surface">Change Password</h3>
               </div>
               <div class="grid grid-cols-3 gap-2">
                 <div class="flex flex-col gap-1">
-                  <label class="text-[11px] text-on-surface-variant">Mevcut şifre</label>
-                  <input id="pwdChangeCur" class="w-full bg-surface-container-lowest px-3 py-1.5 rounded text-[12px] text-on-surface border border-outline-variant/30 outline-none focus:border-primary" type="password" placeholder="Mevcut...">
+                  <label class="text-[11px] text-on-surface-variant">Current password</label>
+                  <input id="pwdChangeCur" class="w-full bg-surface-container-lowest px-3 py-1.5 rounded text-[12px] text-on-surface border border-outline-variant/30 outline-none focus:border-primary" type="password" placeholder="Current...">
                 </div>
                 <div class="flex flex-col gap-1">
-                  <label class="text-[11px] text-on-surface-variant">Yeni şifre (12+)</label>
-                  <input id="pwdChangeNew" class="w-full bg-surface-container-lowest px-3 py-1.5 rounded text-[12px] text-on-surface border border-outline-variant/30 outline-none focus:border-primary" type="password" placeholder="Yeni...">
+                  <label class="text-[11px] text-on-surface-variant">New password (12+)</label>
+                  <input id="pwdChangeNew" class="w-full bg-surface-container-lowest px-3 py-1.5 rounded text-[12px] text-on-surface border border-outline-variant/30 outline-none focus:border-primary" type="password" placeholder="New...">
                 </div>
                 <div class="flex flex-col gap-1">
-                  <label class="text-[11px] text-on-surface-variant">Doğrulama</label>
-                  <input id="pwdChangeConf" class="w-full bg-surface-container-lowest px-3 py-1.5 rounded text-[12px] text-on-surface border border-outline-variant/30 outline-none focus:border-primary" type="password" placeholder="Tekrar...">
+                  <label class="text-[11px] text-on-surface-variant">Confirm</label>
+                  <input id="pwdChangeConf" class="w-full bg-surface-container-lowest px-3 py-1.5 rounded text-[12px] text-on-surface border border-outline-variant/30 outline-none focus:border-primary" type="password" placeholder="Repeat...">
                 </div>
               </div>
               <div class="hidden text-error text-[11.5px]" id="pwdChangeErr"></div>
-              <div class="hidden text-[#047857] text-[11.5px]" id="pwdChangeOk">✓ Şifre güncellendi.</div>
+              <div class="hidden text-[#047857] text-[11.5px]" id="pwdChangeOk">✓ Password updated.</div>
               <div class="flex justify-end">
-                <button onclick="handleChangePassword()" class="btn-spring px-4 py-1.5 rounded-lg bg-primary text-on-primary text-[12px] shadow-sm hover:opacity-90 transition-opacity cursor-pointer">Güncelle</button>
+                <button onclick="handleChangePassword()" class="btn-spring px-4 py-1.5 rounded-lg bg-primary text-on-primary text-[12px] shadow-sm hover:opacity-90 transition-opacity cursor-pointer">Update</button>
               </div>
             </section>
 
             <section class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/30 flex flex-col gap-3">
               <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-[16px] text-primary">key_vertical</span>
-                <h3 class="text-[13px] font-semibold text-on-surface">Kurtarma Anahtarı</h3>
+                <h3 class="text-[13px] font-semibold text-on-surface">Recovery Key</h3>
               </div>
               <div class="hidden text-[#047857] text-[11.5px]" id="regenKeySuccess"></div>
               <div class="flex items-center justify-between">
-                <span class="text-[11.5px] text-on-surface-variant">Acil durum erişim anahtarı</span>
+                <span class="text-[11.5px] text-on-surface-variant">Emergency access key</span>
                 <button onclick="handleRegenerateKey()" class="btn-spring flex items-center gap-1 px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface text-[11.5px] transition-colors cursor-pointer">
-                  <span class="material-symbols-outlined text-[13px]">refresh</span><span>Yeni Anahtar</span>
+                  <span class="material-symbols-outlined text-[13px]">refresh</span><span>New Key</span>
                 </button>
               </div>
               <div class="border-t border-outline-variant/30 pt-3 flex items-center justify-between">
                 <div>
-                  <span class="text-[12px] text-error font-medium">Kasayı Sıfırla</span>
-                  <p class="font-mono-shortcut text-[10.5px] text-outline mt-0.5">Tüm notlar silinir, geri alınamaz.</p>
+                  <span class="text-[12px] text-error font-medium">Reset Vault</span>
+                  <p class="font-mono-shortcut text-[10.5px] text-outline mt-0.5">All notes deleted, cannot be undone.</p>
                 </div>
                 <button onclick="openResetModal()" class="btn-spring flex items-center gap-1 px-3 py-1.5 rounded bg-error/10 hover:bg-error text-error hover:text-on-error text-[11.5px] transition-colors cursor-pointer">
-                  <span class="material-symbols-outlined text-[13px]">delete_forever</span><span>Sıfırla</span>
+                  <span class="material-symbols-outlined text-[13px]">delete_forever</span><span>Reset</span>
                 </button>
               </div>
             </section>
@@ -490,32 +490,32 @@
           <!-- Appearance tab -->
           <div id="settingsSecAppearance" class="hidden flex-col gap-3">
             <section class="bg-surface-container-low p-4 rounded-lg border border-outline-variant/30">
-              <h3 class="text-[13px] font-semibold text-on-surface">Tema ve renkler</h3>
-              <p class="text-[12px] text-on-surface-variant">Klasik mor veya ona eşlik eden yumuşak tonlardan birini seç.</p>
-              <div class="theme-grid"><button type="button" onclick="applyTheme('light')" data-theme="light" class="theme-btn"><span class="theme-preview" style="--swatch:#493ee5"><i></i><i></i><i></i></span>Klasik Mor · Varsayılan</button><button type="button" onclick="applyTheme('sage')" data-theme="sage" class="theme-btn"><span class="theme-preview" style="--swatch:#626887"><i></i><i></i><i></i></span>Sis</button><button type="button" onclick="applyTheme('ocean')" data-theme="ocean" class="theme-btn"><span class="theme-preview" style="--swatch:#6260a0"><i></i><i></i><i></i></span>Lavanta</button><button type="button" onclick="applyTheme('rose')" data-theme="rose" class="theme-btn"><span class="theme-preview" style="--swatch:#82637d"><i></i><i></i><i></i></span>Mürdüm</button><button type="button" onclick="applyTheme('sand')" data-theme="sand" class="theme-btn"><span class="theme-preview" style="--swatch:#786e8d"><i></i><i></i><i></i></span>Leylak</button></div>
-              <p class="text-[12px] text-outline">Yazı tipi ve boyutu not editörünün araç çubuğundadır.</p>
+              <h3 class="text-[13px] font-semibold text-on-surface">Theme &amp; Colors</h3>
+              <p class="text-[12px] text-on-surface-variant">Choose classic purple or one of its softer companion tones.</p>
+              <div class="theme-grid"><button type="button" onclick="applyTheme('light')" data-theme="light" class="theme-btn"><span class="theme-preview" style="--swatch:#493ee5"><i></i><i></i><i></i></span>Classic Purple · Default</button><button type="button" onclick="applyTheme('sage')" data-theme="sage" class="theme-btn"><span class="theme-preview" style="--swatch:#626887"><i></i><i></i><i></i></span>Mist</button><button type="button" onclick="applyTheme('ocean')" data-theme="ocean" class="theme-btn"><span class="theme-preview" style="--swatch:#6260a0"><i></i><i></i><i></i></span>Lavender</button><button type="button" onclick="applyTheme('rose')" data-theme="rose" class="theme-btn"><span class="theme-preview" style="--swatch:#82637d"><i></i><i></i><i></i></span>Plum</button><button type="button" onclick="applyTheme('sand')" data-theme="sand" class="theme-btn"><span class="theme-preview" style="--swatch:#786e8d"><i></i><i></i><i></i></span>Lilac</button></div>
+              <p class="text-[12px] text-outline">Font and size are in the note editor toolbar.</p>
             </section>
-            <section class="settings-card"><h3>Çalışma alanı</h3>
-              <label class="setting-row">Sıkı not listesi<input id="prefCompact" aria-label="Sıkı not listesi" type="checkbox" onchange="setPreference('compact',this.checked)"></label>
-              <label class="setting-row">Animasyonları azalt<input id="prefReduceMotion" aria-label="Animasyonları azalt" type="checkbox" onchange="setPreference('reduce_motion',this.checked)"></label>
+            <section class="settings-card"><h3>Workspace</h3>
+              <label class="setting-row">Compact note list<input id="prefCompact" aria-label="Compact note list" type="checkbox" onchange="setPreference('compact',this.checked)"></label>
+              <label class="setting-row">Reduce animations<input id="prefReduceMotion" aria-label="Reduce animations" type="checkbox" onchange="setPreference('reduce_motion',this.checked)"></label>
             </section>
           </div>
 
           <!-- About tab -->
           <div id="settingsSecAbout" class="hidden flex-col gap-3">
-            <section class="settings-card"><h3>WontNote · Kişisel not alanınız</h3>
-              <p>WontNote; günlük düşünceleri, ders notlarını, proje fikirlerini ve iş notlarını tek yerde tutmak için tasarlanmış sade bir masaüstü not defteridir.</p>
-              <p>Hızlıca not oluşturabilir, başlıkla veya içerikle arayabilir, klasörlere ayırabilir ve sık kullandıklarınızı sabitleyebilirsiniz. Yanlışlıkla sildiğiniz notları çöp kutusundan geri yükleyebilirsiniz.</p>
+            <section class="settings-card"><h3>WontNote · Your personal note space</h3>
+              <p>WontNote is a clean desktop notepad designed to keep daily thoughts, study notes, project ideas, and work notes all in one place.</p>
+              <p>Create notes quickly, search by title or content, organize into folders, and pin your favorites. Accidentally deleted notes can be recovered from the trash.</p>
             </section>
-            <section class="settings-card"><h3>Nasıl kullanılır?</h3>
-              <ol class="about-steps"><li>Ctrl+N ile yeni not oluşturun; başlığı yazıp metne geçin.</li><li>Not araç çubuğundan yazı tipi, boyutu ve biçimi seçin.</li><li>Üstteki klasör seçimiyle notu düzenleyin; önemli notları sabitleyin.</li><li>Ctrl+F ile arayın. İşiniz bitince Ctrl+L ile kasayı kilitleyin.</li></ol>
-              <button type="button" class="settings-action" onclick="switchSettingsTab('shortcuts')">Tüm kısayolları gör · F1</button>
+            <section class="settings-card"><h3>How to use</h3>
+              <ol class="about-steps"><li>Press Ctrl+N to create a new note; type the title then move to the body.</li><li>Use the note toolbar to pick font, size, and formatting.</li><li>Assign a folder from the dropdown above; pin important notes.</li><li>Search with Ctrl+F. Lock the vault with Ctrl+L when done.</li></ol>
+              <button type="button" class="settings-action" onclick="switchSettingsTab('shortcuts')">View all shortcuts · F1</button>
             </section>
-            <section class="settings-card"><h3>Veriler ve güvenlik</h3>
-              <p>Notlar bu cihazdaki kasada AES-256-GCM ile şifreli saklanır. Şifreden anahtar türetmek için Argon2id kullanılır. Uygulama internet bağlantısı gerektirmez ve bulut eşitleme yapmaz.</p>
-              <p>Kurtarma anahtarı da kasayı açabilir: onu şifreniz kadar gizli tutun. Hem şifre hem kurtarma anahtarı kaybolursa notlar kurtarılamaz. Sıfırlama mevcut şifreyi gerektirir ve bütün notları siler.</p>
-              <p class="settings-hint">Açık oturumda bu bilgisayara erişen biri notları görebilir. Şifreleme; zararlı yazılımlara, ekran görüntülerine veya işletim sistemi yöneticisine karşı tam koruma sağlamaz. Güçlü ve benzersiz bir şifre kullanın.</p>
-              <p class="settings-hint">Sürüm 1.1 · Yerel masaüstü uygulaması</p>
+            <section class="settings-card"><h3>Data &amp; Security</h3>
+              <p>Notes are encrypted with AES-256-GCM in a local vault on this device. Argon2id is used for key derivation. The app requires no internet connection and does not sync to the cloud.</p>
+              <p>The recovery key can also unlock the vault — keep it as secret as your password. If both are lost, notes cannot be recovered. Reset deletes all notes.</p>
+              <p class="settings-hint">Anyone with access to this computer while the session is open can see your notes. Encryption does not fully protect against malware, screenshots, or OS administrators. Use a strong, unique password.</p>
+              <p class="settings-hint">Version 1.1 · Local desktop app</p>
             </section>
           </div>
 
@@ -525,9 +525,9 @@
       <div class="h-9 bg-surface-container-high px-4 flex items-center justify-between flex-shrink-0 border-t border-outline-variant/30">
         <div class="flex items-center gap-1.5 font-mono-shortcut text-[10px] text-outline">
           <span class="material-symbols-outlined text-[12px] text-primary" style="font-variation-settings:'FILL' 1;">verified_user</span>
-          <span>Kasa: Korumalı</span>
+          <span>Vault: Protected</span>
         </div>
-        <button onclick="closeSettingsModal()" class="btn-spring px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-highest text-on-surface text-[12px] transition-colors cursor-pointer">Kapat</button>
+        <button onclick="closeSettingsModal()" class="btn-spring px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-highest text-on-surface text-[12px] transition-colors cursor-pointer">Close</button>
       </div>
     </div>
   </div>
@@ -538,14 +538,14 @@
     <div class="bg-surface-container-lowest max-w-md w-full rounded-xl shadow-2xl overflow-hidden flex flex-col p-5 gap-4 animate-modal-pop">
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-[20px] text-primary">key_vertical</span>
-        <h2 class="text-[15px] font-semibold text-on-surface">Kurtarma Anahtarınız</h2>
+        <h2 class="text-[15px] font-semibold text-on-surface">Your Recovery Key</h2>
       </div>
-      <p class="text-[12px] text-on-surface-variant leading-relaxed">Bu anahtarı güvenli bir yere kaydedin. Şifrenizi unutursanız bunu kullanarak kasanızı açabilirsiniz.</p>
+      <p class="text-[12px] text-on-surface-variant leading-relaxed">Save this key somewhere safe. If you forget your password, use it to unlock your vault.</p>
       <div class="p-3 bg-surface-container rounded-lg border border-outline-variant/40 flex items-center justify-between gap-2">
         <code id="displayRecoveryKeyText" class="font-mono text-[12px] font-bold text-primary select-all tracking-wider break-all">XXXX-XXXX-XXXX-XXXX-XXXX-XXXX</code>
-        <button onclick="copyDisplayedKey()" class="flex-shrink-0 px-2 py-1 bg-surface-container-highest rounded text-on-surface text-[11px] hover:bg-primary hover:text-white transition-colors" id="copyKeyBtn">Kopyala</button>
+        <button onclick="copyDisplayedKey()" class="flex-shrink-0 px-2 py-1 bg-surface-container-highest rounded text-on-surface text-[11px] hover:bg-primary hover:text-white transition-colors" id="copyKeyBtn">Copy</button>
       </div>
-      <button onclick="closeRecoveryDisplayModal()" class="btn-spring w-full py-2 bg-primary text-on-primary rounded-lg text-[13px] hover:bg-secondary transition-colors cursor-pointer">Anladım, Devam Et</button>
+      <button onclick="closeRecoveryDisplayModal()" class="btn-spring w-full py-2 bg-primary text-on-primary rounded-lg text-[13px] hover:bg-secondary transition-colors cursor-pointer">Got it, Continue</button>
     </div>
   </div>
 
@@ -556,23 +556,23 @@
       <div class="px-5 py-3.5 bg-surface-container flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-primary text-[18px]">key_vertical</span>
-          <h2 class="text-[14px] text-on-surface font-semibold">Kurtarma Anahtarı</h2>
+          <h2 class="text-[14px] text-on-surface font-semibold">Recovery Key</h2>
         </div>
         <button onclick="closeRecoveryModal()" class="btn-spring w-7 h-7 flex items-center justify-center rounded text-on-surface-variant hover:bg-surface-container-highest transition-colors cursor-pointer">
           <span class="material-symbols-outlined text-[14px]">close</span>
         </button>
       </div>
       <div class="p-5 flex flex-col gap-3">
-        <p class="text-[12px] text-on-surface-variant">Kurulum sırasında aldığınız kurtarma anahtarını girin.</p>
+        <p class="text-[12px] text-on-surface-variant">Enter the recovery key you received during setup.</p>
         <div class="flex flex-col gap-1">
-          <label class="text-[12px] text-on-surface font-medium">Kurtarma Anahtarı</label>
+          <label class="text-[12px] text-on-surface font-medium">Recovery Key</label>
           <input id="recoveryKeyInput" class="w-full px-3 py-2 font-mono text-[12px] uppercase bg-surface-container-low text-on-surface placeholder:text-outline-variant rounded-lg outline-none focus:shadow-[0_0_0_2px_#635bff]" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX" type="text">
         </div>
         <div class="hidden text-error text-[11.5px]" id="recoveryError"></div>
       </div>
       <div class="px-5 py-3 bg-surface-container-low flex items-center justify-end gap-2.5">
-        <button onclick="closeRecoveryModal()" class="btn-spring px-4 py-1.5 rounded-lg text-[12px] text-on-surface hover:bg-surface-container transition-colors cursor-pointer">Vazgeç</button>
-        <button onclick="handleRecoveryUnlock()" class="btn-spring px-4 py-1.5 rounded-lg text-[12px] bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors shadow-sm cursor-pointer">Doğrula ve Aç</button>
+        <button onclick="closeRecoveryModal()" class="btn-spring px-4 py-1.5 rounded-lg text-[12px] text-on-surface hover:bg-surface-container transition-colors cursor-pointer">Cancel</button>
+        <button onclick="handleRecoveryUnlock()" class="btn-spring px-4 py-1.5 rounded-lg text-[12px] bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors shadow-sm cursor-pointer">Verify &amp; Unlock</button>
       </div>
     </div>
   </div>
@@ -587,8 +587,8 @@
             <span class="material-symbols-outlined text-[17px]">delete_forever</span>
           </div>
           <div>
-            <h2 class="text-[14px] font-bold text-on-surface">Kasayı Sıfırla</h2>
-            <p class="font-mono-shortcut text-[10px] text-error">Geri Alınamaz</p>
+            <h2 class="text-[14px] font-bold text-on-surface">Reset Vault</h2>
+            <p class="font-mono-shortcut text-[10px] text-error">Irreversible</p>
           </div>
         </div>
         <button onclick="closeResetModal()" class="btn-spring w-7 h-7 flex items-center justify-center rounded text-on-surface-variant hover:bg-surface-container-highest transition-colors cursor-pointer">
@@ -599,17 +599,20 @@
       <div class="p-5 flex flex-col gap-4">
         <div class="p-3 bg-error-container/30 border border-error/30 rounded-lg flex items-start gap-2.5">
           <span class="material-symbols-outlined text-[16px] text-error flex-shrink-0 mt-0.5">warning</span>
-          <p class="text-[12px] text-on-surface-variant leading-relaxed">Tüm notlar kalıcı olarak silinecek.</p>
+          <p class="text-[12px] text-on-surface-variant leading-relaxed">All notes will be permanently deleted.</p>
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label class="text-[12px] text-on-surface font-medium" for="resetPasswordInput">Mevcut kasa şifresi</label>
-          <input id="resetPasswordInput" type="password" autocomplete="current-password" placeholder="Mevcut şifreniz" class="w-full p-2 rounded bg-surface-container-low text-on-surface">
+          <label class="text-[12px] text-on-surface font-medium" for="resetPasswordInput">Current vault password</label>
+          <input id="resetPasswordInput" type="password" autocomplete="current-password" oninput="handleResetInputChange(document.getElementById('resetConfirmInput').value)" placeholder="Enter your current password" class="w-full px-3 py-2 rounded-lg bg-surface-container-low text-on-surface outline-none border border-outline-variant/40 focus:border-error focus:ring-1 focus:ring-error transition-all">
+        </div>
+
+        <div class="flex flex-col gap-1.5">
           <label class="text-[12px] text-on-surface font-medium">
-            Onaylamak için <span class="font-bold text-error">ONAYLIYORUM</span> yazın:
+            Type <span class="font-bold text-error">CONFIRM</span> to proceed:
           </label>
           <div class="relative flex items-center">
-            <input id="resetConfirmInput" oninput="handleResetInputChange(this.value)" autocomplete="off" spellcheck="false" class="w-full px-3 py-2 font-mono text-[13px] tracking-wider uppercase bg-surface-container-low text-on-surface placeholder:text-outline-variant/60 rounded-lg outline-none border border-outline-variant/40 focus:border-error focus:ring-1 focus:ring-error transition-all" placeholder="ONAYLIYORUM" type="text">
+            <input id="resetConfirmInput" oninput="handleResetInputChange(this.value)" autocomplete="off" spellcheck="false" class="w-full px-3 py-2 font-mono text-[13px] tracking-wider uppercase bg-surface-container-low text-on-surface placeholder:text-outline-variant/60 rounded-lg outline-none border border-outline-variant/40 focus:border-error focus:ring-1 focus:ring-error transition-all" placeholder="CONFIRM" type="text">
             <span id="resetConfirmCheck" class="absolute right-3 hidden text-[#047857]">
               <span class="material-symbols-outlined text-[16px]">check_circle</span>
             </span>
@@ -622,10 +625,10 @@
       </div>
 
       <div class="px-5 py-3.5 bg-surface-container-low border-t border-outline-variant/30 flex items-center justify-end gap-2">
-        <button onclick="closeResetModal()" type="button" class="btn-spring px-4 py-2 rounded-lg text-[12px] text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer">Vazgeç</button>
+        <button onclick="closeResetModal()" type="button" class="btn-spring px-4 py-2 rounded-lg text-[12px] text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer">Cancel</button>
         <button id="resetExecuteBtn" onclick="executeResetVault()" type="button" disabled class="btn-spring px-4 py-2 rounded-lg text-[12px] font-semibold bg-error text-on-error opacity-40 cursor-not-allowed transition-all flex items-center gap-1.5">
           <span class="material-symbols-outlined text-[14px]" id="resetExecuteIcon">delete_forever</span>
-          <span id="resetExecuteBtnText">Sıfırla</span>
+          <span id="resetExecuteBtnText">Reset</span>
         </button>
       </div>
     </div>
@@ -636,11 +639,11 @@
   <div id="noteContextMenu" class="fixed z-[60] hidden bg-surface-container-lowest border border-outline-variant/40 rounded-lg shadow-xl overflow-hidden w-38 animate-modal-pop" style="width:152px;">
     <button onclick="contextMenuAction('pin')" class="w-full flex items-center gap-2 px-3 py-2 text-on-surface hover:bg-surface-container text-[12px] transition-colors cursor-pointer" id="ctxMenuPinBtn">
       <span class="material-symbols-outlined text-[14px] text-tertiary">push_pin</span>
-      <span id="ctxMenuPinLabel">Sabitle</span>
+      <span id="ctxMenuPinLabel">Pin</span>
     </button>
     <button onclick="contextMenuAction('delete')" class="w-full flex items-center gap-2 px-3 py-2 text-error hover:bg-error-container text-[12px] transition-colors cursor-pointer">
       <span class="material-symbols-outlined text-[14px]">delete</span>
-      <span>Sil</span>
+      <span>Delete</span>
     </button>
   </div>
 
@@ -699,7 +702,7 @@
       try {
         const d = new Date(iso), now = new Date();
         const t = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        return d.toDateString() === now.toDateString() ? `Bugün ${t}` : d.toLocaleDateString([], {day:'2-digit', month:'short'});
+        return d.toDateString() === now.toDateString() ? `Today ${t}` : d.toLocaleDateString([], {day:'2-digit', month:'short'});
       } catch { return ''; }
     }
 
@@ -740,7 +743,7 @@
       const badge = document.getElementById('setupStrengthBadge');
       if (!p1) { badge.textContent = ''; return; }
       let score = (hasLen ? 1 : 0) + (hasAlNum ? 1 : 0) + (p1.length >= 16 && /[^A-Za-z0-9]/.test(p1) ? 1 : 0);
-      badge.textContent = ['Zayıf', 'Orta', 'Güçlü', 'Çok Güçlü'][Math.min(score, 3)];
+      badge.textContent = ['Weak', 'Fair', 'Strong', 'Very Strong'][Math.min(score, 3)];
     }
 
     function setRule(id, ok) {
@@ -760,19 +763,19 @@
     async function handleSetupSubmit() {
       const p1 = setupPwd.value || '', p2 = setupConf.value || '';
       const eb = document.getElementById('setupError'), et = document.getElementById('setupErrorText');
-      if (p1.length < 12) { et.textContent = 'Şifre en az 12 karakter olmalı.'; eb.classList.remove('hidden'); eb.classList.add('flex'); return; }
-      if (p1 !== p2) { et.textContent = 'Şifreler eşleşmiyor.'; eb.classList.remove('hidden'); eb.classList.add('flex'); return; }
+      if (p1.length < 12) { et.textContent = 'Password must be at least 12 characters.'; eb.classList.remove('hidden'); eb.classList.add('flex'); return; }
+      if (p1 !== p2) { et.textContent = 'Passwords do not match.'; eb.classList.remove('hidden'); eb.classList.add('flex'); return; }
       eb.classList.add('hidden');
       const btn = document.getElementById('setupSubmitBtn');
       btn.disabled = true;
-      btn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span><span>Oluşturuluyor...</span>';
+      btn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span><span>Creating...</span>';
       if (typeof hydrateIcons === 'function') hydrateIcons(btn);
       const res = await apiCall('create_vault', p1);
       btn.disabled = false;
-      btn.innerHTML = '<span>Kasayı Oluştur</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span>';
+      btn.innerHTML = '<span>Create Vault</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span>';
       if (typeof hydrateIcons === 'function') hydrateIcons(btn);
       if (res && res.success) { currentNotes = res.notes || []; showRecoveryDisplayModal(res.recovery_key); }
-      else { et.textContent = (res && res.error) || 'Kasa oluşturulamadı.'; eb.classList.remove('hidden'); eb.classList.add('flex'); }
+      else { et.textContent = (res && res.error) || 'Could not create vault.'; eb.classList.remove('hidden'); eb.classList.add('flex'); }
     }
 
     function showRecoveryDisplayModal(key) {
@@ -790,8 +793,8 @@
     function copyDisplayedKey() {
       navigator.clipboard.writeText(document.getElementById('displayRecoveryKeyText').textContent);
       const btn = document.getElementById('copyKeyBtn');
-      btn.textContent = '✓ Kopyalandı';
-      setTimeout(() => btn.textContent = 'Kopyala', 2000);
+      btn.textContent = '✓ Copied';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
     }
 
     // ── LOGIN ──
@@ -808,17 +811,17 @@
     async function handleLoginSubmit() {
       const pwd = loginPwd.value || '';
       const eb = document.getElementById('loginErrorMessage'), et = document.getElementById('loginErrorText');
-      if (!pwd) { et.textContent = 'Şifre girin.'; eb.classList.remove('hidden'); eb.classList.add('flex'); return; }
+      if (!pwd) { et.textContent = 'Enter your password.'; eb.classList.remove('hidden'); eb.classList.add('flex'); return; }
       const btn = document.getElementById('loginSubmitBtn');
       btn.disabled = true;
-      btn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span><span>Açılıyor...</span>';
+      btn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span><span>Unlocking...</span>';
       if (typeof hydrateIcons === 'function') hydrateIcons(btn);
       const res = await apiCall('unlock_password', pwd);
       btn.disabled = false;
-      btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">lock_open</span><span>Kilidi Aç</span>';
+      btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">lock_open</span><span>Unlock</span>';
       if (typeof hydrateIcons === 'function') hydrateIcons(btn);
       if (res && res.success) { loginPwd.value = ''; currentNotes = res.notes || []; showView('main'); initMainWorkspace(); }
-      else { et.textContent = (res && res.error) || 'Hatalı şifre.'; eb.classList.remove('hidden'); eb.classList.add('flex'); loginPwd.select(); }
+      else { et.textContent = (res && res.error) || 'Incorrect password.'; eb.classList.remove('hidden'); eb.classList.add('flex'); loginPwd.select(); }
     }
 
     function openRecoveryModal() {
@@ -835,10 +838,10 @@
     async function handleRecoveryUnlock() {
       const key = document.getElementById('recoveryKeyInput').value.trim();
       const eb = document.getElementById('recoveryError');
-      if (!key) { eb.textContent = 'Anahtar girin.'; eb.classList.remove('hidden'); return; }
+      if (!key) { eb.textContent = 'Enter your recovery key.'; eb.classList.remove('hidden'); return; }
       const res = await apiCall('unlock_recovery', key);
       if (res && res.success) { document.getElementById('recoveryKeyInput').value = ''; closeRecoveryModal(); currentNotes = res.notes || []; showView('main'); initMainWorkspace(); }
-      else { eb.textContent = (res && res.error) || 'Geçersiz anahtar.'; eb.classList.remove('hidden'); }
+      else { eb.textContent = (res && res.error) || 'Invalid key.'; eb.classList.remove('hidden'); }
     }
 
     // ── RESET VAULT ──
@@ -854,15 +857,16 @@
       btn.disabled = true;
       btn.className = 'btn-spring px-4 py-2 rounded-lg text-[12px] font-semibold bg-error text-on-error opacity-40 cursor-not-allowed transition-all flex items-center gap-1.5';
       m.classList.remove('hidden'); m.classList.add('flex');
-      setTimeout(() => inp.focus(), 60);
+      setTimeout(() => document.getElementById('resetPasswordInput').focus(), 60);
     }
     function closeResetModal() {
-      document.getElementById('resetPasswordInput').value = '';
       const m = document.getElementById('modal-reset-vault');
       m.classList.add('hidden'); m.classList.remove('flex');
+      document.getElementById('resetPasswordInput').value = '';
     }
     function handleResetInputChange(val) {
-      const ok = (val || '').trim().replace(/i/g, 'İ').toUpperCase() === 'ONAYLIYORUM';
+      const ok = (val || '').trim().toUpperCase() === 'CONFIRM'
+        && document.getElementById('resetPasswordInput').value.length > 0;
       document.getElementById('resetConfirmCheck').classList.toggle('hidden', !ok);
       const btn = document.getElementById('resetExecuteBtn');
       btn.disabled = !ok;
@@ -871,18 +875,22 @@
         : 'btn-spring px-4 py-2 rounded-lg text-[12px] font-semibold bg-error text-on-error opacity-40 cursor-not-allowed transition-all flex items-center gap-1.5';
     }
     async function executeResetVault() {
-      const val = (document.getElementById('resetConfirmInput').value || '').trim().replace(/i/g,'İ').toUpperCase();
-      if (val !== 'ONAYLIYORUM') return;
+      const val = (document.getElementById('resetConfirmInput').value || '').trim().toUpperCase();
+      const password = document.getElementById('resetPasswordInput').value;
+      if (val !== 'CONFIRM' || !password) return;
       const btn = document.getElementById('resetExecuteBtn'), btnTxt = document.getElementById('resetExecuteBtnText'), btnIco = document.getElementById('resetExecuteIcon');
-      btn.disabled = true; btnTxt.textContent = 'Sıfırlanıyor...'; btnIco.classList.add('animate-spin');
-      const res = await apiCall('reset_vault', document.getElementById('resetPasswordInput').value, val);
+      btn.disabled = true; btnTxt.textContent = 'Resetting...'; btnIco.classList.add('animate-spin');
+      const res = await apiCall('reset_vault', password, val);
       if (res && res.success) {
-        closeResetModal(); closeSettingsModal();
+        closeResetModal();
         clearSensitiveUI();
-        showView('setup'); showToast('Kasa sıfırlandı.', 'check_circle');
+        showView('setup');
+        showToast('Vault has been reset.', 'check_circle');
       } else {
-        btn.disabled = false; btnTxt.textContent = 'Sıfırla'; btnIco.classList.remove('animate-spin');
-        document.getElementById('resetErrorText').textContent = (res && res.error) || 'Hata.';
+        btn.disabled = false; btnTxt.textContent = 'Reset'; btnIco.classList.remove('animate-spin');
+        document.getElementById('resetPasswordInput').value = '';
+        handleResetInputChange(val);
+        document.getElementById('resetErrorText').textContent = (res && res.error) || 'Error.';
         document.getElementById('resetErrorBox').classList.remove('hidden');
         document.getElementById('resetErrorBox').classList.add('flex');
       }
@@ -925,7 +933,7 @@
         if (a.pinned && !b.pinned) return -1; if (!a.pinned && b.pinned) return 1;
         return new Date(b.modified||b.created||0) - new Date(a.modified||a.created||0);
       });
-      document.getElementById('notesCountBadge').textContent = `${filtered.length} not`;
+      document.getElementById('notesCountBadge').textContent = `${filtered.length} note${filtered.length !== 1 ? 's' : ''}`;
 
       // Trash bulk btn
       const bulk = document.getElementById('trashBulkDeleteBtn');
@@ -936,11 +944,11 @@
         const empty = document.createElement('div');
         empty.className = 'p-6 flex flex-col items-center justify-center text-center text-on-surface-variant gap-2 my-auto select-none';
         if (searchQuery) {
-          empty.innerHTML = `<span class="material-symbols-outlined text-[26px] text-outline">search_off</span><p class="text-[12px] font-semibold text-on-surface">Sonuç bulunamadı</p><p class="text-[11px] text-outline max-w-[180px]">"${escapeHtml(searchQuery)}" ile eşleşen not yok.</p>`;
+          empty.innerHTML = `<span class="material-symbols-outlined text-[26px] text-outline">search_off</span><p class="text-[12px] font-semibold text-on-surface">No results</p><p class="text-[11px] text-outline max-w-[180px]">No notes match "${escapeHtml(searchQuery)}".</p>`;
         } else if (activeFilter === 'trash') {
-          empty.innerHTML = `<span class="material-symbols-outlined text-[26px] text-outline">delete</span><p class="text-[12px] font-semibold text-on-surface">Çöp kutusu boş</p>`;
+          empty.innerHTML = `<span class="material-symbols-outlined text-[26px] text-outline">delete</span><p class="text-[12px] font-semibold text-on-surface">Trash is empty</p>`;
         } else {
-          empty.innerHTML = `<span class="material-symbols-outlined text-[26px] text-primary/40">note_alt</span><p class="text-[12px] font-semibold text-on-surface">Henüz not yok</p><button onclick="handleNewNote()" class="mt-2 px-3 py-1.5 bg-primary text-on-primary text-[11.5px] font-medium rounded shadow-xs hover:bg-secondary transition-all btn-spring flex items-center gap-1 cursor-pointer"><span class="material-symbols-outlined text-[13px]">add</span><span>İlk Notunu Oluştur</span></button>`;
+          empty.innerHTML = `<span class="material-symbols-outlined text-[26px] text-primary/40">note_alt</span><p class="text-[12px] font-semibold text-on-surface">No notes yet</p><button onclick="handleNewNote()" class="mt-2 px-3 py-1.5 bg-primary text-on-primary text-[11.5px] font-medium rounded shadow-xs hover:bg-secondary transition-all btn-spring flex items-center gap-1 cursor-pointer"><span class="material-symbols-outlined text-[13px]">add</span><span>Create Your First Note</span></button>`;
         }
         container.appendChild(empty);
         if (typeof hydrateIcons === 'function') hydrateIcons(container);
@@ -952,7 +960,7 @@
         const card = document.createElement('div');
         card.className = `group relative flex flex-col gap-0.5 cursor-pointer card-spring border-l-2 transition-all px-2.5 py-2 ${isActive ? 'bg-primary-fixed/15 border-primary' : 'border-transparent hover:bg-surface-container-low hover:border-outline-variant/40'}`;
         card.onclick = e => { if (e.target.closest('.note-ctx-btn')) return; selectNote(note.id); };
-        const title = note.title ? escapeHtml(note.title) : 'Başlıksız Not';
+        const title = note.title ? escapeHtml(note.title) : 'Untitled Note';
         const raw = (note.content||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
         const preview = raw ? raw.substring(0, 80) : '';
         card.innerHTML = `
@@ -968,7 +976,7 @@
           ${preview ? `<p class="text-[11px] text-on-surface-variant line-clamp-2 leading-relaxed">${escapeHtml(preview)}</p>` : ''}
           <div class="flex items-center justify-between pt-0.5">
             <span class="font-mono-shortcut text-[10px] text-outline">${formatDT(note.modified||note.created)}</span>
-            <span class="font-mono-shortcut text-[10px] px-1.5 rounded bg-primary/8 text-primary">${escapeHtml(note.folder||'Kişisel')}</span>
+            <span class="font-mono-shortcut text-[10px] px-1.5 rounded bg-primary/8 text-primary">${escapeHtml(note.folder||'Personal')}</span>
           </div>`;
         card.querySelector('.note-ctx-btn').onclick = event => openCtxMenu(event, note.id, !!note.pinned);
         container.appendChild(card);
@@ -984,11 +992,11 @@
       document.getElementById('editorContent').innerHTML = sanitizeContent(note.content || '');
       applyFont(note.font || readPref('wn_font', 'inter'));
       applyFontSize(note.font_size || 14, false);
-      document.getElementById('editorFolderBreadcrumb').textContent = note.folder || 'Kişisel';
-      document.getElementById('editorTitleBreadcrumb').textContent = (note.title || 'Başlıksız').substring(0, 26);
-      document.getElementById('editorFolderMeta').textContent = note.folder || 'Kişisel';
+      document.getElementById('editorFolderBreadcrumb').textContent = note.folder || 'Personal';
+      document.getElementById('editorTitleBreadcrumb').textContent = (note.title || 'Untitled').substring(0, 26);
+      document.getElementById('editorFolderMeta').textContent = note.folder || 'Personal';
       document.getElementById('editorModifiedMeta').textContent = formatDT(note.modified || note.created);
-      document.getElementById('editorFolderSelect').value = note.folder || 'Kişisel';
+      document.getElementById('editorFolderSelect').value = note.folder || 'Personal';
       document.getElementById('restoreNoteBtn').classList.toggle('hidden', !note.deleted);
       updatePinUI(note.pinned); updateEditorCounts(); renderNotesList();
     }
@@ -999,16 +1007,16 @@
       if (!btn) return;
       if (pinned) {
         btn.className = 'flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary-fixed text-on-primary-fixed text-[10.5px] hover:bg-primary-fixed-dim transition-colors btn-spring cursor-pointer';
-        if (lbl) lbl.textContent = 'Sabitlendi';
+        if (lbl) lbl.textContent = 'Pinned';
       } else {
         btn.className = 'flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10.5px] hover:bg-primary-fixed-dim transition-colors btn-spring cursor-pointer';
-        if (lbl) lbl.textContent = 'Sabitle';
+        if (lbl) lbl.textContent = 'Pin';
       }
     }
 
     async function handleNewNote() {
       if (!await flushSaves()) return;
-      const folder = activeFilter.startsWith('folder:') ? activeFilter.replace('folder:','') : 'Kişisel';
+      const folder = activeFilter.startsWith('folder:') ? activeFilter.replace('folder:','') : 'Personal';
       const res = await apiCall('create_note', folder);
       if (res && res.success) {
         currentNotes = res.notes; activeNoteId = res.note.id;
@@ -1056,17 +1064,17 @@
       if (!trashNotes.length) return;
       for (const note of trashNotes) {
         const res = await apiCall('delete_note', note.id, true);
-        if (!res || !res.success) { showToast('Çöp kutusu tamamen temizlenemedi.', 'error'); renderNotesList(); updateCounts(); return; }
+        if (!res || !res.success) { showToast('Could not fully empty trash.', 'error'); renderNotesList(); updateCounts(); return; }
         currentNotes = res.notes;
       }
       showEditorEmpty(); renderNotesList(); updateCounts();
-      showToast('Çöp kutusu temizlendi.', 'delete');
+      showToast('Trash emptied.', 'delete');
     }
 
     // 3-dot context menu
     function openCtxMenu(e, noteId, isPinned) {
       e.stopPropagation(); contextMenuNoteId = noteId;
-      document.getElementById('ctxMenuPinLabel').textContent = isPinned ? 'Sabitlemeyi Kaldır' : 'Sabitle';
+      document.getElementById('ctxMenuPinLabel').textContent = isPinned ? 'Unpin' : 'Pin';
       const menu = document.getElementById('noteContextMenu');
       menu.classList.remove('hidden');
       if (typeof hydrateIcons === 'function') hydrateIcons(menu);
@@ -1110,7 +1118,7 @@
     function handleTitleInput(v) {
       if (!activeNoteId) return;
       const note = currentNotes.find(n => n.id === activeNoteId);
-      if (note) { note.title = v; document.getElementById('editorTitleBreadcrumb').textContent = (v||'Başlıksız').substring(0,26); triggerAutosave(); }
+      if (note) { note.title = v; document.getElementById('editorTitleBreadcrumb').textContent = (v||'Untitled').substring(0,26); triggerAutosave(); }
     }
     function handleContentInput() {
       if (!activeNoteId) return;
@@ -1123,7 +1131,7 @@
       const note = currentNotes.find(n => n.id === activeNoteId);
       if (!note) return;
       dirtyNotes.set(note.id, JSON.parse(JSON.stringify(note)));
-      setSaveStatus('Kaydediliyor...', '#916c36');
+      setSaveStatus('Saving...', '#916c36');
       clearTimeout(autosaveTimer);
       autosaveTimer = setTimeout(flushSaves, Number(readPref('wn_autosave', '800')));
     }
@@ -1132,11 +1140,11 @@
       saveQueue = saveQueue.then(async () => {
         for (const [id, snapshot] of dirtyNotes) {
           const res = await apiCall('save_note', snapshot);
-          if (!res || !res.success) { setSaveStatus('Kaydedilemedi', '#ba1a1a'); return false; }
+          if (!res || !res.success) { setSaveStatus('Save failed', '#ba1a1a'); return false; }
           if (res.note?.modified) { const local = currentNotes.find(n => n.id === id); if (local) local.modified = res.note.modified; }
           if (dirtyNotes.get(id) === snapshot) dirtyNotes.delete(id);
         }
-        setSaveStatus(dirtyNotes.size ? 'Kaydediliyor...' : 'Kaydedildi', '#39755b');
+        setSaveStatus(dirtyNotes.size ? 'Saving...' : 'Saved', '#39755b');
         renderNotesList();
         return dirtyNotes.size === 0;
       });
@@ -1178,8 +1186,8 @@
     function updateEditorCounts() {
       const txt = document.getElementById('editorContent').innerText || '';
       const w = txt.trim() ? txt.trim().split(/\s+/).length : 0;
-      document.getElementById('editorWordCharCount').textContent = `${w} kelime`;
-      document.getElementById('footerWordCharCount').textContent = `${w} kelime, ${txt.length} karakter`;
+      document.getElementById('editorWordCharCount').textContent = `${w} word${w !== 1 ? 's' : ''}`;
+      document.getElementById('footerWordCharCount').textContent = `${w} word${w !== 1 ? 's' : ''}, ${txt.length} chars`;
     }
 
     function switchViewFilter(key) {
@@ -1192,7 +1200,7 @@
         const ind = btn.querySelector('.active-indicator');
         if (ind) ind.style.display = on ? 'block' : 'none';
       });
-      document.getElementById('currentViewTitle').textContent = {all:'Tüm notlar',pinned:'Sabitlenenler',trash:'Çöp Kutusu'}[key] || key;
+      document.getElementById('currentViewTitle').textContent = {all:'All notes',pinned:'Pinned',trash:'Trash'}[key] || key;
       renderNotesList();
     }
     function switchFolderFilter(name) { activeFilter = 'folder:' + name; document.getElementById('currentViewTitle').textContent = name; renderNotesList(); }
@@ -1207,7 +1215,7 @@
     }
 
     function renderFolders() {
-      const defaults = ['Kişisel', 'Okul & Eğitim', 'İş & Projeler', 'Fikirler & Taslaklar'];
+      const defaults = ['Personal', 'School & Education', 'Work & Projects', 'Ideas & Drafts'];
       const folders = [...new Set([...defaults, ...currentNotes.map(n => n.folder).filter(Boolean)])];
       const host = document.getElementById('sidebarFolders'); host.replaceChildren();
       const select = document.getElementById('editorFolderSelect'); select.replaceChildren();
@@ -1215,19 +1223,19 @@
         const button = document.createElement('button'); button.type = 'button';
         button.className = 'simple-folder';
         const label = document.createElement('span'); label.textContent = name;
-        const count = document.createElement('span'); count.textContent = currentNotes.filter(n => !n.deleted && (n.folder || 'Kişisel') === name).length;
+        const count = document.createElement('span'); count.textContent = currentNotes.filter(n => !n.deleted && (n.folder || 'Personal') === name).length;
         button.append(label, count); button.onclick = () => switchFolderFilter(name); host.appendChild(button);
         const option = document.createElement('option'); option.value = name; option.textContent = name; select.appendChild(option);
       });
       const note = currentNotes.find(n => n.id === activeNoteId);
-      if (note) select.value = note.folder || 'Kişisel';
+      if (note) select.value = note.folder || 'Personal';
     }
     let closeInProgress = false;
     async function requestClose() {
       if (closeInProgress) return;
       closeInProgress = true;
       if (await flushSaves()) await apiCall('close');
-      else { closeInProgress = false; showToast('Not kaydedilemedi. Tekrar deneyin.', 'error'); }
+      else { closeInProgress = false; showToast('Note could not be saved. Try again.', 'error'); }
     }
 
     function execFormat(cmd) { document.getElementById('editorContent').focus(); document.execCommand(cmd, false, null); handleContentInput(); }
@@ -1240,9 +1248,11 @@
       sessionLocking = true;
       document.getElementById('view-main').inert = true;
       try {
-        if (!await flushSaves()) { showToast('Not kaydedilemedi. Kilitlemeden önce tekrar deneyin.', 'error'); return; }
+        if (!await flushSaves()) { showToast('Note could not be saved. Try again before locking.', 'error'); return; }
         const res = await apiCall('lock'); if (!res || !res.success) return;
-        clearSensitiveUI(); closeSettingsModal(); showView('login');
+        currentNotes = []; activeNoteId = null;
+        const lp = document.getElementById('loginPassword'); if (lp) lp.value = '';
+        closeSettingsModal(); showView('login');
       } finally { sessionLocking = false; document.getElementById('view-main').inert = false; }
     }
 
@@ -1279,21 +1289,21 @@
       const conf = document.getElementById('pwdChangeConf').value;
       const eb = document.getElementById('pwdChangeErr'), ok = document.getElementById('pwdChangeOk');
       eb.classList.add('hidden'); ok.classList.add('hidden');
-      if (!cur || !pNew) { eb.textContent = 'Tüm alanları doldurun.'; eb.classList.remove('hidden'); return; }
-      if (pNew.length < 12) { eb.textContent = 'Yeni şifre 12+ karakter.'; eb.classList.remove('hidden'); return; }
-      if (pNew !== conf) { eb.textContent = 'Şifreler eşleşmiyor.'; eb.classList.remove('hidden'); return; }
+      if (!cur || !pNew) { eb.textContent = 'Complete all fields.'; eb.classList.remove('hidden'); return; }
+      if (pNew.length < 12) { eb.textContent = 'New password must be at least 12 characters.'; eb.classList.remove('hidden'); return; }
+      if (pNew !== conf) { eb.textContent = 'Passwords do not match.'; eb.classList.remove('hidden'); return; }
       const res = await apiCall('change_password', cur, pNew);
       if (res && res.success) { ok.classList.remove('hidden'); ['pwdChangeCur','pwdChangeNew','pwdChangeConf'].forEach(id => { document.getElementById(id).value = ''; }); }
-      else { eb.textContent = (res && res.error) || 'Şifre değiştirilemedi.'; eb.classList.remove('hidden'); }
+      else { eb.textContent = (res && res.error) || 'Could not change password.'; eb.classList.remove('hidden'); }
     }
 
     async function handleRegenerateKey() {
       const res = await apiCall('regenerate_recovery_key');
       if (res && res.success) {
         showRecoveryDisplayModal(res.recovery_key);
-        document.getElementById('regenKeySuccess').textContent = '✓ Yeni anahtar oluşturuldu.';
+        document.getElementById('regenKeySuccess').textContent = '✓ New key generated.';
         document.getElementById('regenKeySuccess').classList.remove('hidden');
-      } else showToast((res && res.error) || 'Anahtar üretilemedi.', 'error');
+      } else showToast((res && res.error) || 'Could not generate key.', 'error');
     }
 
     // ── THEME & FONT ──
@@ -1341,7 +1351,7 @@
     function writePref(key, value) {
       try { localStorage.setItem(key, value); } catch {}
       apiCall('set_preference', key, String(value)).then(res => {
-        if (res && !res.success) showToast('Tercih bu oturumda uygulandı; diske kaydedilemedi.', 'error');
+        if (res && !res.success) showToast('Preference applied for this session but could not be saved to disk.', 'error');
       });
     }
     function applyTheme(theme) {

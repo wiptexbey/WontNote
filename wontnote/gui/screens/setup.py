@@ -19,7 +19,7 @@ from ..widgets import PasswordEntry, StrengthMeter, PrimaryBtn, HSep
 class SetupScreen(tk.Frame):
     """
     Full-window frame — creates a new encrypted vault.
-    Mirrors the 'Şifreni oluştur' HTML design.
+    Mirrors the 'Create your password' HTML design.
     """
 
     def __init__(self, parent: tk.Widget, app):
@@ -88,11 +88,11 @@ class SetupScreen(tk.Frame):
 
         tk.Label(top, text="WONTNOTE", bg=SURFACE_LOW, fg=ON_SURFACE_VAR,
                  font=f_label_sm()).pack(pady=(10, 0))
-        tk.Label(top, text="Şifreni oluştur", bg=SURFACE_LOW, fg=ON_SURFACE,
+        tk.Label(top, text="Create your password", bg=SURFACE_LOW, fg=ON_SURFACE,
                  font=f_headline_md()).pack()
         tk.Label(
             top,
-            text="Notlarını güvenle saklamak için bir ana şifre belirle.",
+            text="Set a master password to keep your notes safe.",
             bg=SURFACE_LOW, fg=ON_SURFACE_VAR, font=f_body_sm(),
             wraplength=380, justify="center",
         ).pack(pady=(4, 0))
@@ -102,7 +102,7 @@ class SetupScreen(tk.Frame):
         form.pack(fill="x", padx=32, pady=20)
 
         # Password field
-        tk.Label(form, text="Yeni şifre", bg=SURFACE_LOW, fg=ON_SURFACE,
+        tk.Label(form, text="New password", bg=SURFACE_LOW, fg=ON_SURFACE,
                  font=f_label_md(), anchor="w").pack(fill="x")
         self._pwd = PasswordEntry(form, bg_entry=SURFACE_HIGH,
                                   on_change=self._validate)
@@ -112,13 +112,13 @@ class SetupScreen(tk.Frame):
         # Strength meter
         meter_row = tk.Frame(form, bg=SURFACE_LOW)
         meter_row.pack(fill="x", pady=(6, 0))
-        tk.Label(meter_row, text="Güç:", bg=SURFACE_LOW, fg=OUTLINE,
+        tk.Label(meter_row, text="Strength:", bg=SURFACE_LOW, fg=OUTLINE,
                  font=f_mono()).pack(side="left")
         self._meter = StrengthMeter(meter_row)
         self._meter.pack(side="left", padx=(8, 0))
 
         # Confirm field
-        tk.Label(form, text="Şifreyi doğrula", bg=SURFACE_LOW, fg=ON_SURFACE,
+        tk.Label(form, text="Confirm password", bg=SURFACE_LOW, fg=ON_SURFACE,
                  font=f_label_md(), anchor="w").pack(fill="x", pady=(14, 0))
         self._conf = PasswordEntry(form, bg_entry=SURFACE_HIGH,
                                    on_change=self._validate)
@@ -131,9 +131,9 @@ class SetupScreen(tk.Frame):
                                                       fill="x", expand=True)
         inner_rules = tk.Frame(rules_frame, bg=SURFACE_CONT)
         inner_rules.pack(fill="x", padx=10, pady=(0, 8))
-        self._r_len   = self._rule(inner_rules, "En az 12 karakter")
-        self._r_alnum = self._rule(inner_rules, "Harf ve rakam içermeli")
-        self._r_match = self._rule(inner_rules, "Şifreler eşleşmeli")
+        self._r_len   = self._rule(inner_rules, "At least 12 characters")
+        self._r_alnum = self._rule(inner_rules, "Contains letters and digits")
+        self._r_match = self._rule(inner_rules, "Passwords match")
 
         # Security notice
         notice = tk.Frame(form, bg=SURFACE_CONT)
@@ -144,12 +144,12 @@ class SetupScreen(tk.Frame):
                  font=("Segoe UI Emoji", 14)).pack(side="left", padx=(0, 8))
         txt_frame = tk.Frame(notice_inner, bg=SURFACE_CONT)
         txt_frame.pack(side="left", fill="x", expand=True)
-        tk.Label(txt_frame, text="Sıfır Bilgi Mimarisi", bg=SURFACE_CONT,
+        tk.Label(txt_frame, text="Zero-Knowledge Architecture", bg=SURFACE_CONT,
                  fg=ON_SURFACE, font=f_label_md()).pack(anchor="w")
         tk.Label(
             txt_frame,
-            text="Şifreniz yerel kasayı AES-256 ile şifreler. "
-                 "Cihaz dışına gönderilmez; unutulursa sıfırlanamaz.",
+            text="Your password encrypts the local vault with AES-256. "
+                 "It never leaves this device and cannot be reset if forgotten.",
             bg=SURFACE_CONT, fg=ON_SURFACE_VAR, font=f_body_sm(),
             wraplength=320, justify="left",
         ).pack(anchor="w")
@@ -160,14 +160,14 @@ class SetupScreen(tk.Frame):
         self._err_lbl.pack(pady=(8, 0))
 
         # Submit button
-        self._submit_btn = PrimaryBtn(form, "  🔒  Korumalı Kasayı Oluştur  ",
+        self._submit_btn = PrimaryBtn(form, "  🔒  Create Protected Vault  ",
                                        command=self._on_submit)
         self._submit_btn.pack(fill="x", pady=(8, 0), ipady=3)
 
         # Bottom bar
         bottom = tk.Frame(card, bg=SURFACE_HIGH)
         bottom.pack(fill="x")
-        tk.Label(bottom, text="256-Bit Yerel Kasa Şifreleme  •  v1.0",
+        tk.Label(bottom, text="256-Bit Local Vault Encryption  •  v1.0",
                  bg=SURFACE_HIGH, fg=OUTLINE, font=f_mono()).pack(pady=6)
 
         # Keyboard binding
@@ -223,15 +223,15 @@ class SetupScreen(tk.Frame):
         pwd  = self._pwd.get()
         conf = self._conf.get()
         if len(pwd) < 12:
-            self._err_lbl.configure(text="Şifre en az 12 karakter olmalıdır.")
+            self._err_lbl.configure(text="Password must be at least 12 characters.")
             self._pwd.focus()
             return
         if pwd != conf:
-            self._err_lbl.configure(text="Şifreler eşleşmiyor.")
+            self._err_lbl.configure(text="Passwords do not match.")
             self._conf.focus()
             return
 
-        self._submit_btn.configure(state="disabled", text="Oluşturuluyor…")
+        self._submit_btn.configure(state="disabled", text="Creating…")
         self.after(50, lambda: self._do_create(pwd))
 
     def _do_create(self, pwd: str):
@@ -247,24 +247,24 @@ class SetupScreen(tk.Frame):
             self._show_recovery_key(recovery_key, vault_bytes, pwd)
         except Exception as exc:
             self._submit_btn.configure(state="normal",
-                                        text="  🔒  Korumalı Kasayı Oluştur  ")
-            self._err_lbl.configure(text=f"Hata: {exc}")
+                                        text="  🔒  Create Protected Vault  ")
+            self._err_lbl.configure(text=f"Error: {exc}")
 
     def _show_recovery_key(self, key: str, vault_bytes: bytes, pwd: str):
         """Show recovery key in a dialog, then unlock and enter main window."""
         win = tk.Toplevel(self.winfo_toplevel())
-        win.title("Kurtarma Anahtarı — Lütfen kaydedin!")
+        win.title("Recovery Key — Please save it!")
         win.resizable(True, True)
         win.minsize(440, 320)
         win.grab_set()
         win.configure(bg=SURFACE_LOW)
 
-        tk.Label(win, text="⚠ Kurtarma Anahtarınızı Saklayın",
+        tk.Label(win, text="⚠ Save Your Recovery Key",
                  bg=SURFACE_LOW, fg=ERROR, font=f_headline_md()).pack(padx=24, pady=(20, 4))
         tk.Label(
             win,
-            text="Bu anahtarı şifrenizi unutursanız kullanacaksınız.\n"
-                 "Kaybolursa verileriniz kurtarılamaz.",
+            text="You will need this key if you ever forget your password.\n"
+                 "If it is lost, your data cannot be recovered.",
             bg=SURFACE_LOW, fg=ON_SURFACE_VAR, font=f_body_sm(),
             wraplength=380, justify="center",
         ).pack(padx=24)
@@ -283,8 +283,8 @@ class SetupScreen(tk.Frame):
         def copy_key():
             win.clipboard_clear()
             win.clipboard_append(key)
-            copy_btn.configure(text="✓ Kopyalandı!")
-        copy_btn = tk.Button(win, text="📋 Kopyala", command=copy_key,
+            copy_btn.configure(text="✓ Copied!")
+        copy_btn = tk.Button(win, text="📋 Copy", command=copy_key,
                               bg=SURFACE_HIGH, fg=ON_SURFACE, relief="flat",
                               font=f_label_md(), cursor="hand2", padx=8, pady=3)
         copy_btn.pack(pady=(0, 4))
@@ -301,7 +301,7 @@ class SetupScreen(tk.Frame):
             self.app.notes        = notes
             self.app.show_main()
 
-        tk.Button(win, text="  Anladım, Devam Et  ", command=proceed,
+        tk.Button(win, text="  Got it, Continue  ", command=proceed,
                    bg=PRIMARY, fg=ON_PRIMARY, relief="flat",
                    font=f_label_md(), cursor="hand2",
                    padx=12, pady=6).pack(pady=(4, 20))

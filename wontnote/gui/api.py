@@ -42,13 +42,13 @@ def note_mutation(method):
     def wrapped(self, *args, **kwargs):
         with self._state_lock:
             if self._master_key is None or self._vault_bytes is None:
-                return {"success": False, "error": "Kasa açık değil."}
+                return {"success": False, "error": "Vault is not open."}
             previous = deepcopy(self._notes)
             try:
                 return method(self, *args, **kwargs)
             except Exception:
                 self._notes = previous
-                return {"success": False, "error": "Not kaydedilemedi. Lütfen tekrar deneyin."}
+                return {"success": False, "error": "Could not save note. Please try again."}
     return wrapped
 
 
@@ -92,21 +92,21 @@ class WontNoteAPI:
             save_preference(key, value)
             return {"success": True}
         except Exception:
-            return {"success": False, "error": "Tercih kaydedilemedi."}
+            return {"success": False, "error": "Could not save preference."}
 
     @synchronized
     def create_vault(self, password: str) -> dict:
         """Create a new vault with password (must be >= 12 characters)."""
         if not isinstance(password, str) or not 12 <= len(password) <= 1024:
-            return {"success": False, "error": "Şifre 12–1024 karakter olmalıdır."}
+            return {"success": False, "error": "Password must be 12–1024 characters."}
         try:
             read_vault()
         except FileNotFoundError:
             pass
         except Exception:
-            return {"success": False, "error": "Kasa durumu doğrulanamadı; mevcut veriler korunuyor."}
+            return {"success": False, "error": "Vault state could not be verified; existing data is preserved."}
         else:
-            return {"success": False, "error": "Mevcut kasa var. Önce kasanın kilidini açın."}
+            return {"success": False, "error": "A vault already exists. Unlock it first."}
 
         try:
             vault_bytes, recovery_key = create_vault(password)
@@ -124,7 +124,7 @@ class WontNoteAPI:
                 "notes": self._notes,
             }
         except Exception as exc:
-            return {"success": False, "error": f"Kasa oluşturulamadı: {exc}"}
+            return {"success": False, "error": f"Could not create vault: {exc}"}
 
     @synchronized
     def unlock_password(self, password: str) -> dict:
@@ -135,17 +135,17 @@ class WontNoteAPI:
         if not isinstance(password, str) or not 1 <= len(password) <= 1024:
             return self._auth_failed()
         if self._master_key is not None:
-            return {"success": False, "error": "Kasa zaten açık."}
+            return {"success": False, "error": "Vault is already open."}
         if not self._vault_bytes:
             try:
                 self._vault_bytes = read_vault()
             except Exception:
-                return {"success": False, "error": "Kasa dosyası bulunamadı."}
+                return {"success": False, "error": "Vault file not found."}
 
         try:
             fields = _unpack_vault(self._vault_bytes)
             if fields["memory_cost"] > 262144 or fields["time_cost"] > 6 or fields["parallelism"] > 8:
-                return {"success": False, "error": "Kasa güvenli kaynak sınırlarını aşıyor."}
+                return {"success": False, "error": "Vault exceeds safe resource limits."}
             mk, notes = unlock_with_password(self._vault_bytes, password)
             self._master_key = mk
             self._notes = notes
@@ -166,12 +166,12 @@ class WontNoteAPI:
         if not isinstance(recovery_key_str, str) or len(recovery_key_str) > 256:
             return self._auth_failed()
         if self._master_key is not None:
-            return {"success": False, "error": "Kasa zaten açık."}
+            return {"success": False, "error": "Vault is already open."}
         if not self._vault_bytes:
             try:
                 self._vault_bytes = read_vault()
             except Exception:
-                return {"success": False, "error": "Kasa dosyası bulunamadı."}
+                return {"success": False, "error": "Vault file not found."}
 
         try:
             mk, notes = unlock_with_recovery_key(self._vault_bytes, recovery_key_str)
@@ -189,14 +189,14 @@ class WontNoteAPI:
         remaining = math.ceil(self._retry_after - self._clock())
         if remaining > 0:
             return {"success": False, "retry_seconds": remaining,
-                    "error": f"Çok fazla başarısız deneme. {remaining} saniye bekleyin."}
+                    "error": f"Too many failed attempts. Wait {remaining} seconds."}
         return None
 
     def _auth_failed(self):
         self._failed_attempts += 1
         if self._failed_attempts >= 5:
             self._retry_after = self._clock() + min(60, 5 * 2 ** min(self._failed_attempts - 5, 4))
-        return {"success": False, "error": "Şifre veya kurtarma bilgisi geçersiz."}
+        return {"success": False, "error": "Invalid password or recovery key."}
 
     def lock(self) -> dict:
         with self._state_lock:
@@ -222,11 +222,11 @@ class WontNoteAPI:
         return deepcopy(self._notes) if self._master_key is not None else []
 
     @note_mutation
-    def create_note(self, folder: str = "Kişisel") -> dict:
+    def create_note(self, folder: str = "Personal") -> dict:
         """Create a new note and immediately persist it."""
         if not isinstance(folder, str) or len(folder) > 100:
-            return {"success": False, "error": "Geçersiz klasör."}
-        note = make_note("Başlıksız Not", "")
+            return {"success": False, "error": "Invalid folder."}
+        note = make_note("Untitled Note", "")
         note["folder"] = folder
         note["pinned"] = False
         note["deleted"] = False
@@ -240,12 +240,12 @@ class WontNoteAPI:
     def save_note(self, note_data: dict) -> dict:
         """Update note fields and persist."""
         if not isinstance(note_data, dict):
-            return {"success": False, "error": "Geçersiz not."}
+            return {"success": False, "error": "Invalid note."}
         for field in ("title", "content", "folder", "font"):
             if field in note_data and not isinstance(note_data[field], str):
-                return {"success": False, "error": "Geçersiz not alanı."}
+                return {"success": False, "error": "Invalid note field."}
         if len(note_data.get("content", "")) > 2_000_000 or len(note_data.get("title", "")) > 500:
-            return {"success": False, "error": "Not boyutu sınırı aşıldı."}
+            return {"success": False, "error": "Note size limit exceeded."}
         note_id = note_data.get("id")
         target = None
         for n in self._notes:
@@ -276,7 +276,7 @@ class WontNoteAPI:
             target["modified"] = now_iso
             saved_note = target
         else:
-            return {"success": False, "error": "Not bulunamadı."}
+            return {"success": False, "error": "Note not found."}
 
         self._persist()
         time_str = datetime.now().strftime("%H:%M")
@@ -330,14 +330,14 @@ class WontNoteAPI:
     def change_password(self, cur_pwd: str, new_pwd: str) -> dict:
         """Verify current password and update vault to new password."""
         if not isinstance(new_pwd,str) or not 12 <= len(new_pwd) <= 1024:
-            return {"success": False, "error": "Yeni şifre 12–1024 karakter olmalıdır."}
+            return {"success": False, "error": "New password must be 12–1024 characters."}
         if not isinstance(cur_pwd,str) or len(cur_pwd) > 1024:
-            return {"success": False, "error": "Geçersiz mevcut şifre."}
+            return {"success": False, "error": "Invalid current password."}
 
         try:
             temp_mk, _ = unlock_with_password(self._vault_bytes, cur_pwd)
         except VaultError:
-            return {"success": False, "error": "Mevcut şifre hatalı."}
+            return {"success": False, "error": "Current password is incorrect."}
 
         try:
             new_vault = change_password(self._vault_bytes, temp_mk, new_pwd)
@@ -345,7 +345,7 @@ class WontNoteAPI:
             self._vault_bytes = new_vault
             return {"success": True}
         except Exception as exc:
-            return {"success": False, "error": f"Şifre değiştirilemedi: {exc}"}
+            return {"success": False, "error": f"Could not change password: {exc}"}
         finally:
             _secure_zero(temp_mk)
 
@@ -353,7 +353,7 @@ class WontNoteAPI:
     def regenerate_recovery_key(self) -> dict:
         """Generate a fresh recovery key and re-encrypt recovery slot."""
         if self._master_key is None or self._vault_bytes is None:
-            return {"success": False, "error": "Kasa açık değil."}
+            return {"success": False, "error": "Vault is not open."}
 
         try:
             new_vault, new_key = regenerate_recovery_key(
@@ -363,21 +363,36 @@ class WontNoteAPI:
             self._vault_bytes = new_vault
             return {"success": True, "recovery_key": new_key}
         except Exception as exc:
-            return {"success": False, "error": f"Anahtar üretilemedi: {exc}"}
+            return {"success": False, "error": f"Could not generate key: {exc}"}
 
     @synchronized
     def reset_vault(self, password: str = "", confirmation: str = "") -> dict:
-        """Require password verification even when called outside the reset UI."""
-        if confirmation != "ONAYLIYORUM" or not isinstance(password, str) or not password or len(password) > 1024:
-            return {"success": False, "error": "Sıfırlamak için mevcut şifre ve onay gereklidir."}
+        """Verify the current password and explicit confirmation before reset."""
+        if (
+            confirmation != "CONFIRM"
+            or not isinstance(password, str)
+            or not password
+            or len(password) > 1024
+        ):
+            return {
+                "success": False,
+                "error": "Current password and confirmation are required.",
+            }
         blocked = self._auth_blocked()
         if blocked:
             return blocked
         try:
             data = read_vault()
             fields = _unpack_vault(data)
-            if fields["memory_cost"] > 262144 or fields["time_cost"] > 6 or fields["parallelism"] > 8:
-                return {"success": False, "error": "Kasa güvenli kaynak sınırlarını aşıyor."}
+            if (
+                fields["memory_cost"] > 262144
+                or fields["time_cost"] > 6
+                or fields["parallelism"] > 8
+            ):
+                return {
+                    "success": False,
+                    "error": "Vault exceeds safe resource limits.",
+                }
             key, _ = unlock_with_password(data, password)
         except Exception:
             return self._auth_failed()
@@ -391,7 +406,7 @@ class WontNoteAPI:
             self._vault_bytes = None
             return {"success": True}
         except Exception:
-            return {"success": False, "error": "Kasa sıfırlanamadı."}
+            return {"success": False, "error": "Could not reset vault."}
 
     # ── Window Controls (Safe fallbacks) ───────────────────────────────────────
     def minimize(self) -> dict:
