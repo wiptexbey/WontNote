@@ -75,6 +75,17 @@ The vault uses authenticated encryption and modern key derivation standards:
    pip install -r requirements.txt
    ```
 
+### Building the Windows release
+
+Install PyInstaller in the environment, then build the bundled application:
+
+```bash
+pip install pyinstaller
+pyinstaller --clean --noconfirm WontNote.spec
+```
+
+The distributable files are written to `dist/WontNote/`. Zip its contents to create the versioned Windows download.
+
 ## Usage
 
 Start the application:
