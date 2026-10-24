@@ -6,10 +6,14 @@ and connects it to the Python cryptographic bridge (WontNoteAPI).
 """
 
 import sys
+import logging
 from pathlib import Path
+from threading import Lock, Thread
 import webview
 
 from wontnote.gui.api import WontNoteAPI
+
+logger = logging.getLogger(__name__)
 
 
 class App:
@@ -17,6 +21,8 @@ class App:
 
     def __init__(self):
         self.api = WontNoteAPI()
+        self._close_request_lock = Lock()
+        self._close_request_pending = False
 
         if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
             base_dir = Path(sys._MEIPASS)
@@ -50,12 +56,22 @@ class App:
     def _on_closing(self):
         if self.api._master_key is None or self.api._allow_close:
             return True
+        with self._close_request_lock:
+            if self._close_request_pending:
+                return False
+            self._close_request_pending = True
+
+        Thread(target=self._request_close, daemon=True).start()
+        return False
+
+    def _request_close(self):
         try:
             self.window.evaluate_js("void requestClose()")
         except Exception:
-            # Keep the window open while the bridge is still loading.
-            pass
-        return False
+            logger.exception("Could not request application close from the UI.")
+        finally:
+            with self._close_request_lock:
+                self._close_request_pending = False
 
     def run(self) -> None:
         """Start the pywebview event loop."""
