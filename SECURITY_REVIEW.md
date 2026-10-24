@@ -1,38 +1,38 @@
-# WontNote - Yerel güvenlik incelemesi
+﻿# WontNote — Local Security Review
 
-Tarih: 21 Ekim 2026
+Date: October 21, 2026
 
-## Kapsam
+## Scope
 
-Python şifreleme çekirdeği, yerel kasa depolama, PyWebView API köprüsü ve HTML not editörü incelendi. Bütün saldırı denemeleri test dizinindeki geçici kasalara uygulandı; gerçek kullanıcı kasası okunmadı, sıfırlanmadı ve parola tahmini yapılmadı.
+The Python cryptographic core, local vault storage, PyWebView API bridge, and HTML note editor were reviewed. All attack attempts were applied to temporary vaults in the test directory; no real user vault was read, reset, or subjected to password guessing.
 
-## Doğrulanan ve düzeltilen sorunlar
+## Verified and Resolved Issues
 
-1. **Kilitli kasanın üzerine şifresiz yazma:** API doğrudan çağrılınca `create_vault` mevcut kasayı değiştiriyordu. İlk regresyon testi bu davranışı yeniden üretti. Mevcut kasa kontrolü ve süreçler arasında da üzerine yazmayı engelleyen atomik, özel dosya oluşturma eklendi.
-2. **Şifresiz kasa silme:** `reset_vault` yalnızca arayüzdeki onaya dayanıyordu. İlk regresyon testi kilitli test kasasını silebildi. Artık Python tarafında mevcut parola doğrulaması ve açık onay gerekir. Yanlış parola hiçbir dosyayı silmez.
-3. **Sınırsız çevrimiçi deneme:** Parola ve kurtarma girişimleri ortak, süreç içi sınıra alındı. Beş başarısız denemeden sonra 5 saniyeden başlayan ve 60 saniyeye kadar artan bekleme uygulanır. Kimlik doğrulama ve kilitleme aynı kilitle sıralanır.
-4. **Değiştirilmiş başlıkla kaynak tüketimi:** Dosyadaki Argon2 parametrelerinin 1 GiB bellek talep etmesi, hesaplama başlamadan köprü katmanında reddedilir. Uygulamanın normal 64 MiB / 3 tur parametreleri değişmedi.
-5. **Kilit sonrası gizli arayüz verileri:** Not metni ve başlığı yanında klasörler, arama, kurtarma anahtarı, parola alanları ve sayaçlar da DOM'dan temizlenir. Başarılı giriş sonrası parola alanı temizlenir. Kaydetme/kilitleme sırasında çalışma alanı geçici olarak etkileşime kapatılır.
-6. **Not içeriği ve dış kaynaklar:** HTML temizleyici script, event niteliği, iframe ve dış bağlantı öğelerini çıkarır. Sürükleyip bırakma ve yapıştırma düz metin kabul eder. Uzak font istekleri kaldırıldı. CSP nesne ve çerçeveleri engeller. PyWebView köprüsünün `new Function` ve `eval` gereksinimi nedeniyle `unsafe-eval`, mevcut HTML olayları nedeniyle `unsafe-inline` tutulur; CSP tek başına XSS koruması sayılmaz.
+1. **Plaintext overwrite of a locked vault:** `create_vault` was modifying an existing vault when the API was called directly. An initial regression test reproduced this behaviour. A check for an existing vault and atomic, exclusive file creation — also preventing cross-process overwrites — was added.
+2. **Unauthenticated vault deletion:** `reset_vault` relied solely on the UI confirmation prompt. An initial regression test was able to delete a locked test vault. The Python layer now requires current-password verification and explicit confirmation. An incorrect password leaves all files untouched.
+3. **Unlimited online attempts:** Password and recovery-key attempts are subject to a shared, in-process rate limit. After five failed attempts a lockout starting at 5 seconds and increasing up to 60 seconds is applied. Authentication and lock operations are serialised under the same lock.
+4. **Resource exhaustion via tampered header:** An Argon2 parameter in the vault file requesting 1 GiB of memory is rejected at the bridge layer before computation begins. The application's normal parameters (64 MiB / 3 iterations) are unchanged.
+5. **Residual UI data after lock:** In addition to note body and title, folders, search state, recovery key, password fields, and counters are cleared from the DOM. The password field is cleared after a successful login. The workspace is temporarily disabled during save and lock operations.
+6. **Note content and external resources:** The HTML sanitiser strips script, event attributes, iframe, and external link elements. Drag-and-drop and paste accept plain text only. Remote font requests were removed. CSP blocks objects and frames. `unsafe-eval` is retained due to PyWebView's `new Function` and `eval` requirements; `unsafe-inline` is retained due to existing HTML events — CSP alone does not constitute XSS protection.
 
-Tercihler, yalnızca izin verilen anahtar/değerleri kabul eden ayrı bir JSON dosyasında kalıcı tutulur. Parola ve notlar bu dosyaya yazılamaz. WebView özel modu korunur; tarayıcı oturum verilerini kalıcılaştırarak tercih saklama yoluna gidilmez.
+Preferences are persisted in a separate JSON file that accepts only allowlisted keys and values. Passwords and notes cannot be written to this file. WebView private mode is preserved; session data is not persisted via the browser as a preference-storage side-channel.
 
-## Denenen erişim yolları
+## Attack Vectors Attempted
 
-- Boş ve yanlış parola, SQL benzeri parola metni, geçersiz kurtarma anahtarı.
-- Kilitliyken not okuma, oluşturma, düzenleme, silme ve kurtarma anahtarı yenileme.
-- Şifreli bloğun son baytını değiştirme.
-- Mevcut kasayı yeni bir parola ile değiştirme ve doğrulamasız sıfırlama.
-- Giriş ve kilitleme işlemlerini eşzamanlı çalıştırma.
-- Dosya oluşturma yarışında mevcut hedefin üzerine yazma.
-- Sahte not alanları ve yüksek kaynak tüketen başlık.
+- Empty and incorrect passwords, SQL-injection-style password strings, invalid recovery keys.
+- Reading, creating, editing, deleting notes, and regenerating the recovery key while locked.
+- Flipping the last byte of the ciphertext block.
+- Replacing an existing vault with a new password and resetting without verification.
+- Running login and lock operations concurrently.
+- Overwriting an existing target in a file-creation race.
+- Forged note fields and a resource-exhausting header.
 
-Yanlış parola/anahtar veya değiştirilmiş şifreli veriyle notların çözülmesi sağlanamadı. Bu, sınırlı regresyon testlerinin sonucudur; kapsamlı bağımsız penetrasyon testi veya kırılmazlık garantisi değildir.
+Decrypting notes with an incorrect password/key or tampered ciphertext could not be achieved. These results are from limited regression tests and do not represent a comprehensive independent penetration test or a guarantee of unbreakability.
 
-## Sınırlar
+## Limitations
 
-Çevrimiçi bekleme uygulama yeniden başlatıldığında sıfırlanır; kasanın kopyası üzerinde çevrimdışı parola tahminini engellemez. Güçlü parola gereklidir. Geçerli kurtarma anahtarıyla erişim tasarlanan davranıştır. Açık oturumdaki veriler, işletim sistemi yöneticisi, bellek dökümü, zararlı yazılım veya fiziksel dosya silmeye karşı korunamaz. Python'da belleği sıfırlamak en iyi çaba düzeyindedir. Otomatik kilitleme, bekleyen notu kaydetme başarısızsa veri kaybını önlemek için kilitlemeyi tamamlamaz ve hata gösterir. Otomatik kilitleme ve küçültme olayı gerçek masaüstü ortamında ayrıca denenmelidir.
+The online lockout resets on application restart and does not prevent offline password guessing against a copy of the vault. A strong password is required. Access via a valid recovery key is intended behaviour. Data in an open session cannot be protected against an OS administrator, a memory dump, malware, or physical file deletion. Memory zeroing in Python is best-effort. Auto-lock will not complete locking — and will display an error — if saving the pending note fails, in order to avoid data loss. Auto-lock and the minimise event should be tested separately in a real desktop environment.
 
-## Doğrulama
+## Verification
 
-`tests/test_security_audit.py` yalıtılmış saldırı regresyonlarını, `tests/test_gui_api.py` kilit ve kalıcılık davranışlarını, `tests/test_frontend.cjs` tercih/kısayol/arayüz temizliği akışlarını kapsar. Tam test sonucu uygulama teslim mesajında raporlanır.
+`tests/test_security_audit.py` covers isolated attack regressions, `tests/test_gui_api.py` covers lock and persistence behaviour, and `tests/test_frontend.cjs` covers preference/shortcut/UI-cleanup flows. Full test results are reported in the application delivery message.
