@@ -55,7 +55,7 @@ function clearSensitiveUI() {
   clearTimeout(autosaveTimer);currentNotes=[];activeNoteId=null;dirtyNotes.clear();contextMenuNoteId=null;
   activeFilter='all';searchQuery='';
   ['editorContent','notesListContainer','sidebarFolders'].forEach(id=>document.getElementById(id).replaceChildren());
-  ['editorTitleInput','searchInput','loginPassword','setupPwd','setupConf','pwdChangeCur','pwdChangeNew','pwdChangeConf','resetConfirmInput','resetPasswordInput','recoveryKeyInput'].forEach(id=>{document.getElementById(id).value='';});
+  ['editorTitleInput','searchInput','loginPassword','setupPwd','setupConf','pwdChangeCur','pwdChangeNew','pwdChangeConf','resetConfirmInput','recoveryKeyInput'].forEach(id=>{document.getElementById(id).value='';});
   ['editorTitleBreadcrumb','editorFolderBreadcrumb','editorFolderMeta','editorModifiedMeta','displayRecoveryKeyText','editorWordCharCount','footerWordCharCount','toastMessage'].forEach(id=>{document.getElementById(id).textContent='';});
   ['countAllNotes','countPinnedNotes','countTrashNotes','notesCountBadge'].forEach(id=>{document.getElementById(id).textContent='0';});
   document.querySelectorAll('[id^="modal-"]').forEach(el=>{el.classList.add('hidden');el.classList.remove('flex');});

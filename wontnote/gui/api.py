@@ -366,21 +366,10 @@ class WontNoteAPI:
             return {"success": False, "error": f"Could not generate key: {exc}"}
 
     @synchronized
-    def reset_vault(self, password: str = "", confirmation: str = "") -> dict:
-        """Verify the current password and explicit confirmation before reset."""
-        if (
-            confirmation != "CONFIRM"
-            or not isinstance(password, str)
-            or not password
-            or len(password) > 1024
-        ):
-            return {
-                "success": False,
-                "error": "Current password and confirmation are required.",
-            }
-        blocked = self._auth_blocked()
-        if blocked:
-            return blocked
+    def reset_vault(self, confirmation: str = "") -> dict:
+        """Require explicit confirmation before resetting the vault."""
+        if confirmation != "CONFIRM":
+            return {"success": False, "error": "Confirmation is required."}
         try:
             data = read_vault()
             fields = _unpack_vault(data)
@@ -393,11 +382,9 @@ class WontNoteAPI:
                     "success": False,
                     "error": "Vault exceeds safe resource limits.",
                 }
-            key, _ = unlock_with_password(data, password)
         except Exception:
-            return self._auth_failed()
+            return {"success": False, "error": "Could not verify vault state."}
         try:
-            _secure_zero(key)
             p = vault_path()
             bak = p.parent / "vault.wnt.bak"
             bak.unlink(missing_ok=True)

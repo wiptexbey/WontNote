@@ -8,7 +8,7 @@ function element(id) {
   return elements.get(id);
 }
 const context = vm.createContext({
-  document: {getElementById:element, querySelectorAll:()=>[], querySelector:()=>null, addEventListener(){}, documentElement:{classList:{remove(){},toggle(){}},dataset:{}}},
+  document: {getElementById:element, hasElement:id=>elements.has(id), querySelectorAll:()=>[], querySelector:()=>null, addEventListener(){}, documentElement:{classList:{remove(){},toggle(){}},dataset:{}}},
   window: {addEventListener(){},getSelection(){return {removeAllRanges(){}}}},
   localStorage: {getItem(){return null;},setItem(){}},
   setTimeout:()=>1, setInterval:()=>1, clearTimeout(){}, console, assert
@@ -20,6 +20,16 @@ vm.runInContext(fs.readFileSync('wontnote/gui/web/preferences.js','utf8'), conte
 (async () => {
   await vm.runInContext(`(async () => {
     renderNotesList = () => {};
+    let resetArgs;
+    apiCall = async (...args) => { resetArgs = args; return {success:false,error:'test'}; };
+    openResetModal();
+    assert.equal(document.hasElement('resetPasswordInput'), false);
+    document.getElementById('resetConfirmInput').value = 'CONFIRM';
+    handleResetInputChange('CONFIRM');
+    assert.equal(document.getElementById('resetExecuteBtn').disabled, false);
+    await executeResetVault();
+    assert.deepEqual(resetArgs, ['reset_vault', 'CONFIRM']);
+
     const saved = [];
     apiCall = async (method, note) => { saved.push(JSON.parse(JSON.stringify(note))); return {success:true}; };
     currentNotes = [{id:'a',title:'First'},{id:'b',title:'Second'}];

@@ -603,11 +603,6 @@
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label class="text-[12px] text-on-surface font-medium" for="resetPasswordInput">Current vault password</label>
-          <input id="resetPasswordInput" type="password" autocomplete="current-password" oninput="handleResetInputChange(document.getElementById('resetConfirmInput').value)" placeholder="Enter your current password" class="w-full px-3 py-2 rounded-lg bg-surface-container-low text-on-surface outline-none border border-outline-variant/40 focus:border-error focus:ring-1 focus:ring-error transition-all">
-        </div>
-
-        <div class="flex flex-col gap-1.5">
           <label class="text-[12px] text-on-surface font-medium">
             Type <span class="font-bold text-error">CONFIRM</span> to proceed:
           </label>
@@ -849,7 +844,6 @@
       const m = document.getElementById('modal-reset-vault');
       const inp = document.getElementById('resetConfirmInput');
       inp.value = '';
-      document.getElementById('resetPasswordInput').value = '';
       document.getElementById('resetConfirmCheck').classList.add('hidden');
       document.getElementById('resetErrorBox').classList.add('hidden');
       document.getElementById('resetErrorBox').classList.remove('flex');
@@ -857,16 +851,14 @@
       btn.disabled = true;
       btn.className = 'btn-spring px-4 py-2 rounded-lg text-[12px] font-semibold bg-error text-on-error opacity-40 cursor-not-allowed transition-all flex items-center gap-1.5';
       m.classList.remove('hidden'); m.classList.add('flex');
-      setTimeout(() => document.getElementById('resetPasswordInput').focus(), 60);
+      setTimeout(() => inp.focus(), 60);
     }
     function closeResetModal() {
       const m = document.getElementById('modal-reset-vault');
       m.classList.add('hidden'); m.classList.remove('flex');
-      document.getElementById('resetPasswordInput').value = '';
     }
     function handleResetInputChange(val) {
-      const ok = (val || '').trim().toUpperCase() === 'CONFIRM'
-        && document.getElementById('resetPasswordInput').value.length > 0;
+      const ok = (val || '').trim().toUpperCase() === 'CONFIRM';
       document.getElementById('resetConfirmCheck').classList.toggle('hidden', !ok);
       const btn = document.getElementById('resetExecuteBtn');
       btn.disabled = !ok;
@@ -876,11 +868,10 @@
     }
     async function executeResetVault() {
       const val = (document.getElementById('resetConfirmInput').value || '').trim().toUpperCase();
-      const password = document.getElementById('resetPasswordInput').value;
-      if (val !== 'CONFIRM' || !password) return;
+      if (val !== 'CONFIRM') return;
       const btn = document.getElementById('resetExecuteBtn'), btnTxt = document.getElementById('resetExecuteBtnText'), btnIco = document.getElementById('resetExecuteIcon');
       btn.disabled = true; btnTxt.textContent = 'Resetting...'; btnIco.classList.add('animate-spin');
-      const res = await apiCall('reset_vault', password, val);
+      const res = await apiCall('reset_vault', val);
       if (res && res.success) {
         closeResetModal();
         clearSensitiveUI();
@@ -888,7 +879,6 @@
         showToast('Vault has been reset.', 'check_circle');
       } else {
         btn.disabled = false; btnTxt.textContent = 'Reset'; btnIco.classList.remove('animate-spin');
-        document.getElementById('resetPasswordInput').value = '';
         handleResetInputChange(val);
         document.getElementById('resetErrorText').textContent = (res && res.error) || 'Error.';
         document.getElementById('resetErrorBox').classList.remove('hidden');

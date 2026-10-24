@@ -23,7 +23,7 @@ def test_passwordless_create_cannot_replace_existing_vault(stored_vault):
     assert stored_vault.read_bytes()==original
 
 
-def test_passwordless_reset_cannot_delete_locked_vault(stored_vault):
+def test_reset_requires_explicit_confirmation(stored_vault):
     original=stored_vault.read_bytes()
     result=WontNoteAPI().reset_vault()
     assert not result["success"]
@@ -66,13 +66,9 @@ def test_rate_limit_covers_password_and_recovery(stored_vault,monkeypatch):
     assert api.unlock_password("test-password-12345")["success"]
 
 
-def test_reset_requires_password_and_explicit_confirmation(stored_vault):
-    api=WontNoteAPI();original=stored_vault.read_bytes()
-    assert not api.reset_vault("", "CONFIRM")["success"]
-    assert not api.reset_vault("wrong", "CONFIRM")["success"]
-    assert not api.reset_vault("test-password-12345", "")["success"]
-    assert stored_vault.read_bytes()==original
-    assert api.reset_vault("test-password-12345", "CONFIRM")["success"]
+def test_reset_with_confirmation_deletes_locked_vault(stored_vault):
+    result=WontNoteAPI().reset_vault("CONFIRM")
+    assert result["success"]
     assert not stored_vault.exists()
 
 
