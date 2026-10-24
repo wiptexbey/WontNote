@@ -8,9 +8,12 @@ vault storage, and note manager.
 from datetime import datetime, timezone
 from copy import deepcopy
 from functools import wraps
-from threading import RLock
+import logging
+from threading import RLock, Timer
 import time
 import math
+
+logger = logging.getLogger(__name__)
 
 from wontnote.crypto_core import (
     VaultError,
@@ -418,11 +421,17 @@ class WontNoteAPI:
     def close(self) -> dict:
         self._allow_close = True
         if self._window:
+            timer = Timer(0.5, self._destroy_window)
+            timer.daemon = True
+            timer.start()
+        return {"success": True}
+
+    def _destroy_window(self):
+        if self._window:
             try:
                 self._window.destroy()
             except Exception:
-                pass
-        return {"success": True}
+                logger.exception("Could not close the application window.")
 
     # ── Persistence Helper ────────────────────────────────────────────────────
     def _persist(self):

@@ -1224,8 +1224,16 @@
     async function requestClose() {
       if (closeInProgress) return;
       closeInProgress = true;
-      if (await flushSaves()) await apiCall('close');
-      else { closeInProgress = false; showToast('Note could not be saved. Try again.', 'error'); }
+      if (!await flushSaves()) {
+        closeInProgress = false;
+        showToast('Note could not be saved. Try again.', 'error');
+        return;
+      }
+      const result = await apiCall('close');
+      if (!result || !result.success) {
+        closeInProgress = false;
+        showToast((result && result.error) || 'Could not close the application.', 'error');
+      }
     }
 
     function execFormat(cmd) { document.getElementById('editorContent').focus(); document.execCommand(cmd, false, null); handleContentInput(); }

@@ -69,6 +69,16 @@ vm.runInContext(fs.readFileSync('wontnote/gui/web/preferences.js','utf8'), conte
     shortcutFormat=null; document.activeElement={closest:()=>null};
     handleAppKeydown({key:'b',ctrlKey:true,preventDefault(){}});
     assert.equal(shortcutFormat,null);
+    let closeCalls = 0;
+    flushSaves = async () => true;
+    apiCall = async method => {
+      assert.equal(method, 'close');
+      closeCalls += 1;
+      return {success: closeCalls > 1, error: 'close failed'};
+    };
+    await requestClose();
+    await requestClose();
+    assert.equal(closeCalls, 2);
     clearSensitiveUI(); assert.equal(currentNotes.length,0); assert.equal(activeNoteId,null); assert.equal(dirtyNotes.size,0);
     assert.equal(document.getElementById('editorTitleInput').value,'');
   })()`, context);

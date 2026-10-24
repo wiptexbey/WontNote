@@ -2,6 +2,7 @@
 from copy import deepcopy
 import pytest
 from wontnote.gui.api import WontNoteAPI
+import wontnote.gui.api as api_module
 
 
 def opened_api(monkeypatch):
@@ -51,3 +52,36 @@ def test_delayed_save_cannot_resurrect_deleted_note(monkeypatch):
     api.delete_note(note["id"], permanent=True)
     assert not api.save_note(note)["success"]
     assert api._notes == []
+
+
+def test_close_defers_window_destruction_until_bridge_response(monkeypatch):
+    scheduled = {}
+
+    class DeferredTimer:
+        def __init__(self, interval, function):
+            scheduled["interval"] = interval
+            scheduled["function"] = function
+            self.daemon = False
+
+        def start(self):
+            scheduled["started"] = True
+
+    class Window:
+        destroyed = False
+
+        def destroy(self):
+            self.destroyed = True
+
+    monkeypatch.setattr(api_module, "Timer", DeferredTimer)
+    api = WontNoteAPI()
+    window = Window()
+    api._set_window(window)
+
+    assert api.close() == {"success": True}
+    assert api._allow_close
+    assert scheduled["started"]
+    assert scheduled["interval"] > 0
+    assert not window.destroyed
+
+    scheduled["function"]()
+    assert window.destroyed
