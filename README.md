@@ -43,7 +43,7 @@ The vault uses authenticated encryption and modern key derivation standards:
 
 1. Clone or download the repository:
    ```bash
-   git clone https://github.com/your-username/WontNote.git
+   git clone https://github.com/wiptexbey/WontNote.git
    cd WontNote
    ```
 
