@@ -7,6 +7,7 @@ datas = [
     ('wontnote/gui/web/style.css',      'wontnote/gui/web'),
     ('wontnote/gui/web/icons.js',       'wontnote/gui/web'),
     ('wontnote/gui/web/preferences.js', 'wontnote/gui/web'),
+    ('WontNote.ico',                   '.'),
     # pythonnet runtime DLL (required by pywebview WinForms backend)
     ('.venv/Lib/site-packages/pythonnet/runtime', 'pythonnet/runtime'),
 ]
@@ -52,6 +53,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
+    icon='WontNote.ico',
     name='WontNote',
     debug=False,
     bootloader_ignore_signals=False,

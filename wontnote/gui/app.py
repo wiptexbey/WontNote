@@ -59,4 +59,11 @@ class App:
 
     def run(self) -> None:
         """Start the pywebview event loop."""
-        webview.start(debug=False)
+        if sys.platform == "win32":
+            if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+                icon_path = Path(sys._MEIPASS) / "WontNote.ico"
+            else:
+                icon_path = Path(__file__).resolve().parents[2] / "WontNote.ico"
+            webview.start(debug=False, icon=str(icon_path))
+        else:
+            webview.start(debug=False)

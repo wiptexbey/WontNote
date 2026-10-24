@@ -83,7 +83,7 @@ pip install pyinstaller
 pyinstaller --clean --noconfirm WontNote.spec
 ```
 
-The standalone Windows executable is written to `dist/WontNote.exe`.
+The standalone Windows executable with its bundled application icon is written to `dist/WontNote.exe`.
 
 ## Usage
 
