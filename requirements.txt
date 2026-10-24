@@ -1,3 +1,5 @@
+# requires Python 3.10+
+#
 # Core cryptography: AES-256-GCM via AESGCM, HKDF-SHA256
 cryptography>=42.0.0
 
@@ -9,3 +11,6 @@ platformdirs>=4.2.0
 
 # Test framework
 pytest>=8.0.0
+
+# GUI Engine: Native Edge WebView2 / WebKit window
+pywebview>=6.0.0

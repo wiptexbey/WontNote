@@ -36,14 +36,15 @@ causes authentication to fail (integrity protection).
 import json
 import os
 import struct
-import uuid
+import unicodedata
 from base64 import b32encode, b32decode
-from datetime import datetime, timezone
 
 from argon2.low_level import hash_secret_raw, Type
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+
+from wontnote.notes import create_note, update_note
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -58,7 +59,11 @@ DEFAULT_TIME_COST   = 3
 DEFAULT_PARALLELISM = 4
 HASH_LENGTH         = 32        # bytes
 
-# Upper bounds — prevent a malicious vault from locking the application
+# Argon2id parameter bounds
+MEMORY_COST_MIN = 8             # KiB (enforced as >= 8 * parallelism)
+TIME_COST_MIN   = 1
+PARALLELISM_MIN = 1
+
 MEMORY_COST_MAX = 1_048_576     # 1 GiB
 TIME_COST_MAX   = 10
 PARALLELISM_MAX = 16
@@ -79,18 +84,31 @@ HKDF_INFO = b"wontnote-recovery-v1"   # HKDF context label
 # Note data
 MIN_PASSWORD_LENGTH = 12
 
-# Total header size in bytes (must stay in sync with _pack_vault/_unpack_vault)
-_HEADER_SIZE = 175
+# Struct format for the 175-byte vault header
+HEADER_STRUCT_FORMAT = ">4sBIBB16s12s48s16s12s48s12s"
+HEADER_LENGTH = struct.calcsize(HEADER_STRUCT_FORMAT)
+if HEADER_LENGTH != 175:
+    raise RuntimeError(f"Expected header length 175, got {HEADER_LENGTH}")
+
+
+# ---------------------------------------------------------------------------
+# Error class
+# ---------------------------------------------------------------------------
+
+class VaultError(ValueError):
+    """
+    Raised when the vault cannot be opened due to a wrong password,
+    wrong recovery key, corrupted data, or invalid parameters.
+
+    The error message is intentionally generic — it does not reveal
+    which specific field was incorrect.
+    Subclasses ValueError for backward-compatibility with callers and tests.
+    """
 
 
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
-
-def _utc_now_iso() -> str:
-    """Return the current UTC time as an ISO-8601 string."""
-    return datetime.now(timezone.utc).isoformat()
-
 
 def _secure_zero(ba: bytearray) -> None:
     """
@@ -104,6 +122,13 @@ def _secure_zero(ba: bytearray) -> None:
         ba[i] = 0
 
 
+def _normalize_password(password: str) -> str:
+    """Normalize password to Unicode NFKC form."""
+    if not isinstance(password, str):
+        raise ValueError("Password must be a string.")
+    return unicodedata.normalize("NFKC", password)
+
+
 def _argon2id_derive(
     password_bytes: bytes,
     salt: bytes,
@@ -114,24 +139,27 @@ def _argon2id_derive(
     """
     Derive a 32-byte key from a password using Argon2id.
     Returns a bytearray; the caller must zero it after use.
+    Wraps any argon2-cffi exception into VaultError.
     """
-    raw = hash_secret_raw(
-        secret=password_bytes,
-        salt=salt,
-        time_cost=time_cost,
-        memory_cost=memory_cost,
-        parallelism=parallelism,
-        hash_len=HASH_LENGTH,
-        type=Type.ID,
-    )
-    # hash_secret_raw returns bytes; copy into a mutable bytearray
-    return bytearray(raw)
+    try:
+        raw = hash_secret_raw(
+            secret=password_bytes,
+            salt=salt,
+            time_cost=time_cost,
+            memory_cost=memory_cost,
+            parallelism=parallelism,
+            hash_len=HASH_LENGTH,
+            type=Type.ID,
+        )
+        return bytearray(raw)
+    except Exception as e:
+        raise VaultError("Could not open vault.") from e
 
 
 def _hkdf_derive(recovery_key_bytes: bytes, salt: bytes) -> bytearray:
     """
     Derive a 32-byte wrapping key from a high-entropy recovery key using
-    HKDF-SHA256.  Argon2id is unnecessary because the input already
+    HKDF-SHA256. Argon2id is unnecessary because the input already
     contains 32 bytes of random entropy.
     """
     hkdf = HKDF(
@@ -178,25 +206,25 @@ def _aesgcm_unwrap(
 
 def _validate_params(memory_cost: int, time_cost: int, parallelism: int) -> None:
     """
-    Verify that Argon2id parameters read from the file header do not exceed
-    the defined upper bounds.  Prevents a malicious vault from exhausting
-    system resources.
+    Verify that Argon2id parameters read from the file header fall within
+    the defined valid lower and upper bounds.
     """
-    if memory_cost > MEMORY_COST_MAX:
-        raise ValueError(
-            f"memory_cost ({memory_cost}) exceeds the allowed maximum ({MEMORY_COST_MAX})."
+    if parallelism < PARALLELISM_MIN or parallelism > PARALLELISM_MAX:
+        raise VaultError(
+            f"parallelism ({parallelism}) out of bounds [{PARALLELISM_MIN}, {PARALLELISM_MAX}]."
         )
-    if time_cost > TIME_COST_MAX:
-        raise ValueError(
-            f"time_cost ({time_cost}) exceeds the allowed maximum ({TIME_COST_MAX})."
+    if time_cost < TIME_COST_MIN or time_cost > TIME_COST_MAX:
+        raise VaultError(
+            f"time_cost ({time_cost}) out of bounds [{TIME_COST_MIN}, {TIME_COST_MAX}]."
         )
-    if parallelism > PARALLELISM_MAX:
-        raise ValueError(
-            f"parallelism ({parallelism}) exceeds the allowed maximum ({PARALLELISM_MAX})."
+    min_memory = 8 * parallelism
+    if memory_cost < min_memory or memory_cost > MEMORY_COST_MAX:
+        raise VaultError(
+            f"memory_cost ({memory_cost}) out of bounds [{min_memory}, {MEMORY_COST_MAX}]."
         )
 
 
-def _pack_vault(
+def _pack_vault_and_encrypt_notes(
     memory_cost: int,
     time_cost: int,
     parallelism: int,
@@ -206,90 +234,87 @@ def _pack_vault(
     recovery_salt: bytes,
     recovery_nonce: bytes,
     recovery_ciphertext: bytes,
-    notes_nonce: bytes,
-    encrypted_notes: bytes,
+    master_key: bytearray,
+    notes_data: bytes | list,
 ) -> bytes:
     """
-    Pack all fields into a single binary blob (vault bytes).
+    Build the vault header (used as AAD), encrypt notes using AES-256-GCM
+    with a fresh random 12-byte nonce, and return the complete packed vault.
 
-    Header layout (= AAD region, 175 bytes):
-        magic | version | memory_cost | time_cost | parallelism
-        | password_salt | password_nonce | password_ciphertext
-        | recovery_salt | recovery_nonce | recovery_ciphertext
-        | notes_nonce
-
-    Followed immediately by: encrypted_notes.
+    A fresh random 12-byte nonce is generated on EVERY call.
+    The entire header is passed as AAD to authenticate the notes block.
     """
-    header = (
-        MAGIC_BYTES                                     # 4 B
-        + bytes([FORMAT_VERSION])                       # 1 B
-        + struct.pack(">I", memory_cost)                # 4 B big-endian uint32
-        + bytes([time_cost])                            # 1 B
-        + bytes([parallelism])                          # 1 B
-        + password_salt                                 # 16 B
-        + password_nonce                                # 12 B
-        + password_ciphertext                           # 48 B
-        + recovery_salt                                 # 16 B
-        + recovery_nonce                                # 12 B
-        + recovery_ciphertext                           # 48 B
-        + notes_nonce                                   # 12 B
+    if isinstance(notes_data, list):
+        notes_json = _notes_to_json(notes_data)
+    else:
+        notes_json = notes_data
+
+    notes_nonce = os.urandom(NONCE_LENGTH)
+    header = struct.pack(
+        HEADER_STRUCT_FORMAT,
+        MAGIC_BYTES,
+        FORMAT_VERSION,
+        memory_cost,
+        time_cost,
+        parallelism,
+        password_salt,
+        password_nonce,
+        password_ciphertext,
+        recovery_salt,
+        recovery_nonce,
+        recovery_ciphertext,
+        notes_nonce,
     )
-    # Total header: 4+1+4+1+1+16+12+48+16+12+48+12 = 175 bytes
-    assert len(header) == _HEADER_SIZE, "Header size mismatch — internal error."
+    assert len(header) == HEADER_LENGTH, "Header length mismatch."
+
+    try:
+        aesgcm = AESGCM(bytes(master_key))
+        encrypted_notes = aesgcm.encrypt(notes_nonce, notes_json, header)
+    except Exception as e:
+        raise VaultError("Could not open vault.") from e
+
     return header + encrypted_notes
 
 
 def _unpack_vault(vault_bytes: bytes) -> dict:
     """
-    Parse vault bytes, validate magic bytes and version, and return all
-    fields as a dictionary.
+    Parse vault bytes, validate magic bytes, version, and parameters,
+    and return all fields as a dictionary.
 
     Raises:
-        ValueError: Unknown format, truncated data, or parameter bounds exceeded.
+        VaultError: Unknown format, truncated data, or parameter bounds exceeded.
     """
-    if len(vault_bytes) < _HEADER_SIZE + GCM_TAG_LENGTH:
-        raise ValueError("Vault file is too short or corrupted.")
+    if len(vault_bytes) < HEADER_LENGTH + GCM_TAG_LENGTH:
+        raise VaultError("Vault file is too short or corrupted.")
 
-    pos = 0
+    header_bytes = vault_bytes[:HEADER_LENGTH]
+    (
+        magic,
+        version,
+        memory_cost,
+        time_cost,
+        parallelism,
+        password_salt,
+        password_nonce,
+        password_ciphertext,
+        recovery_salt,
+        recovery_nonce,
+        recovery_ciphertext,
+        notes_nonce,
+    ) = struct.unpack(HEADER_STRUCT_FORMAT, header_bytes)
 
-    # Magic bytes (4 B)
-    magic = vault_bytes[pos:pos + 4]; pos += 4
     if magic != MAGIC_BYTES:
-        raise ValueError("Invalid file format: magic bytes do not match.")
+        raise VaultError("Invalid file format: magic bytes do not match.")
 
-    # Format version (1 B)
-    version = vault_bytes[pos]; pos += 1
     if version != FORMAT_VERSION:
-        raise ValueError(f"Unsupported format version: {version}.")
+        raise VaultError(f"Unsupported format version: {version}.")
 
-    # Argon2id parameters
-    (memory_cost,) = struct.unpack(">I", vault_bytes[pos:pos + 4]); pos += 4
-    time_cost   = vault_bytes[pos]; pos += 1
-    parallelism = vault_bytes[pos]; pos += 1
-
-    # Enforce parameter upper bounds before doing any expensive computation
+    # Enforce parameter bounds
     _validate_params(memory_cost, time_cost, parallelism)
 
-    # Password slot
-    password_salt        = vault_bytes[pos:pos + 16]; pos += 16
-    password_nonce       = vault_bytes[pos:pos + 12]; pos += 12
-    password_ciphertext  = vault_bytes[pos:pos + 48]; pos += 48
-
-    # Recovery slot
-    recovery_salt        = vault_bytes[pos:pos + 16]; pos += 16
-    recovery_nonce       = vault_bytes[pos:pos + 12]; pos += 12
-    recovery_ciphertext  = vault_bytes[pos:pos + 48]; pos += 48
-
-    # Notes nonce
-    notes_nonce = vault_bytes[pos:pos + 12]; pos += 12
-
-    # The entire header is the AAD region
-    aad = vault_bytes[:pos]
-
-    # Encrypted notes block (remainder; includes GCM tag)
-    encrypted_notes = vault_bytes[pos:]
+    encrypted_notes = vault_bytes[HEADER_LENGTH:]
     if len(encrypted_notes) < GCM_TAG_LENGTH:
-        raise ValueError("Encrypted notes block is too short.")
+        raise VaultError("Encrypted notes block is too short.")
 
     return {
         "memory_cost":          memory_cost,
@@ -302,23 +327,9 @@ def _unpack_vault(vault_bytes: bytes) -> dict:
         "recovery_nonce":       recovery_nonce,
         "recovery_ciphertext":  recovery_ciphertext,
         "notes_nonce":          notes_nonce,
-        "aad":                  aad,
+        "aad":                  header_bytes,
         "encrypted_notes":      encrypted_notes,
     }
-
-
-# ---------------------------------------------------------------------------
-# Error class
-# ---------------------------------------------------------------------------
-
-class VaultError(Exception):
-    """
-    Raised when the vault cannot be opened due to a wrong password,
-    wrong recovery key, or corrupted data.
-
-    The error message is intentionally generic — it does not reveal
-    which specific field was incorrect.
-    """
 
 
 # ---------------------------------------------------------------------------
@@ -341,12 +352,12 @@ def _json_to_notes(data: bytes) -> list:
 
 def _format_recovery_key(raw_bytes: bytes) -> str:
     """
-    Base32-encode 32 raw bytes and split into groups of 4 characters
-    separated by hyphens for human-readable display.
+    Base32-encode raw bytes, strip trailing '=' padding, and split into
+    groups of 4 characters separated by hyphens for human-readable display.
 
-    Example: ABCD-EFGH-IJKL-MNOP-...
+    Example: ABCD-EFGH-IJKL-...
     """
-    b32 = b32encode(raw_bytes).decode("ascii")
+    b32 = b32encode(raw_bytes).decode("ascii").rstrip("=")
     groups = [b32[i:i + 4] for i in range(0, len(b32), 4)]
     return "-".join(groups)
 
@@ -354,16 +365,36 @@ def _format_recovery_key(raw_bytes: bytes) -> str:
 def _parse_recovery_key(recovery_str: str) -> bytes:
     """
     Parse a user-supplied recovery key string: strip hyphens and spaces,
-    uppercase, then Base32-decode.
+    convert to uppercase, restore '=' Base32 padding, then decode.
+
+    Decoding tolerates lowercase characters, spaces, and hyphens.
+    Malformed input (bad characters, invalid length, wrong decoded length)
+    must raise VaultError.
 
     Raises:
-        VaultError: If the string is not valid Base32.
+        VaultError: If the key cannot be decoded or is invalid.
     """
-    cleaned = recovery_str.replace("-", "").replace(" ", "").upper()
-    try:
-        return b32decode(cleaned)
-    except Exception:
+    if not isinstance(recovery_str, str):
         raise VaultError("Could not open vault.")
+
+    cleaned = recovery_str.replace("-", "").replace(" ", "").upper()
+    if not cleaned:
+        raise VaultError("Could not open vault.")
+
+    # Base32 requires length to be a multiple of 8 when padded
+    remainder = len(cleaned) % 8
+    if remainder != 0:
+        cleaned += "=" * (8 - remainder)
+
+    try:
+        raw = b32decode(cleaned)
+    except Exception as e:
+        raise VaultError("Could not open vault.") from e
+
+    if len(raw) != RECOVERY_KEY_LENGTH:
+        raise VaultError("Could not open vault.")
+
+    return raw
 
 
 # ---------------------------------------------------------------------------
@@ -375,8 +406,11 @@ def _unwrap_master_key_and_notes(
 ) -> tuple[bytearray, list]:
     """
     Unwrap the master key from the given slot using *wrap_key*, then
-    decrypt the notes block.  On failure a generic VaultError is raised —
+    decrypt the notes block. On failure a generic VaultError is raised —
     the caller cannot tell which field was wrong.
+
+    If unwrapping or decrypting fails, intermediate master_key is zeroized
+    before the exception propagates.
 
     slot: "password" or "recovery"
     """
@@ -391,29 +425,32 @@ def _unwrap_master_key_and_notes(
         # Unwrap the master key
         try:
             master_key_bytes = _aesgcm_unwrap(wrap_key, nonce, ciphertext)
-        except Exception:
-            raise VaultError("Could not open vault.")
+        except Exception as e:
+            raise VaultError("Could not open vault.") from e
 
         master_key = bytearray(master_key_bytes)
-
+        success = False
         try:
-            # Decrypt the notes block; AAD ensures header integrity is also verified
-            aesgcm = AESGCM(bytes(master_key))
             try:
+                aesgcm = AESGCM(bytes(master_key))
                 notes_json = aesgcm.decrypt(
                     fields["notes_nonce"],
                     fields["encrypted_notes"],
                     fields["aad"],
                 )
-            except Exception:
-                raise VaultError("Could not open vault.")
-            notes = _json_to_notes(notes_json)
-        except VaultError:
-            raise
-        except Exception:
-            raise VaultError("Could not open vault.")
+            except Exception as e:
+                raise VaultError("Could not open vault.") from e
 
-        return master_key, notes
+            try:
+                notes = _json_to_notes(notes_json)
+            except Exception as e:
+                raise VaultError("Could not open vault.") from e
+
+            success = True
+            return master_key, notes
+        finally:
+            if not success:
+                _secure_zero(master_key)
 
     finally:
         _secure_zero(wrap_key)
@@ -438,7 +475,8 @@ def create_vault(password: str) -> tuple[bytes, str]:
     Raises:
         ValueError: If the password is too short.
     """
-    if len(password) < MIN_PASSWORD_LENGTH:
+    normalized = _normalize_password(password)
+    if len(normalized) < MIN_PASSWORD_LENGTH:
         raise ValueError(
             f"Password must be at least {MIN_PASSWORD_LENGTH} characters long."
         )
@@ -449,7 +487,7 @@ def create_vault(password: str) -> tuple[bytes, str]:
     try:
         # 2a. Password slot: Argon2id → wrap key → AES-GCM
         password_salt = os.urandom(PASSWORD_SALT_LENGTH)
-        password_bytes = password.encode("utf-8")
+        password_bytes = normalized.encode("utf-8")
         wrap_key = _argon2id_derive(password_bytes, password_salt)
         try:
             password_nonce, password_ciphertext = _aesgcm_wrap(
@@ -469,29 +507,19 @@ def create_vault(password: str) -> tuple[bytes, str]:
         finally:
             _secure_zero(wrap_key)
 
-        # 3. Encrypt the empty notes list with the master key.
-        #    Strategy: generate notes_nonce first, build the header (= AAD),
-        #    then encrypt so the AAD is known before encryption.
-        notes_nonce = os.urandom(NONCE_LENGTH)
-
-        # Build a temporary vault to derive the AAD (encrypted_notes placeholder = b"")
-        _tmp = _pack_vault(
-            DEFAULT_MEMORY_COST, DEFAULT_TIME_COST, DEFAULT_PARALLELISM,
-            password_salt, password_nonce, password_ciphertext,
-            recovery_salt, recovery_nonce, recovery_ciphertext,
-            notes_nonce, b"",
-        )
-        aad = _tmp[:_HEADER_SIZE]
-
-        aesgcm = AESGCM(bytes(master_key))
-        encrypted_notes = aesgcm.encrypt(notes_nonce, _notes_to_json([]), aad)
-
-        # 4. Pack the final vault bytes
-        vault_bytes = _pack_vault(
-            DEFAULT_MEMORY_COST, DEFAULT_TIME_COST, DEFAULT_PARALLELISM,
-            password_salt, password_nonce, password_ciphertext,
-            recovery_salt, recovery_nonce, recovery_ciphertext,
-            notes_nonce, encrypted_notes,
+        # 3 & 4. Build header + encrypt notes with master key
+        vault_bytes = _pack_vault_and_encrypt_notes(
+            DEFAULT_MEMORY_COST,
+            DEFAULT_TIME_COST,
+            DEFAULT_PARALLELISM,
+            password_salt,
+            password_nonce,
+            password_ciphertext,
+            recovery_salt,
+            recovery_nonce,
+            recovery_ciphertext,
+            master_key,
+            [],
         )
 
         return vault_bytes, _format_recovery_key(raw_recovery)
@@ -509,11 +537,11 @@ def unlock_with_password(vault_bytes: bytes, password: str) -> tuple[bytearray, 
         master_key is a bytearray; the caller must zero it after use.
 
     Raises:
-        ValueError: Corrupted or unknown format.
-        VaultError: Wrong password or corrupted data.
+        VaultError: Wrong password, corrupted data, or invalid format/parameters.
     """
     fields = _unpack_vault(vault_bytes)
-    password_bytes = password.encode("utf-8")
+    normalized = _normalize_password(password)
+    password_bytes = normalized.encode("utf-8")
     wrap_key = _argon2id_derive(
         password_bytes,
         fields["password_salt"],
@@ -542,40 +570,50 @@ def unlock_with_recovery_key(
     return _unwrap_master_key_and_notes(fields, wrap_key, "recovery")
 
 
+def _decrypt_notes_block(fields: dict, master_key: bytearray) -> bytes:
+    """
+    Authenticate and decrypt the existing notes block using master_key and header AAD.
+    Raises VaultError("Could not open vault.") if authentication or decryption fails.
+    """
+    try:
+        aesgcm = AESGCM(bytes(master_key))
+        return aesgcm.decrypt(
+            fields["notes_nonce"],
+            fields["encrypted_notes"],
+            fields["aad"],
+        )
+    except Exception as e:
+        raise VaultError("Could not open vault.") from e
+
+
 def save_notes(vault_bytes: bytes, master_key: bytearray, notes: list) -> bytes:
     """
     Re-encrypt the notes list with a fresh nonce and return updated vault bytes.
 
+    Before encrypting, verifies the given master_key by decrypting the existing
+    notes block with it and the existing header as AAD. On failure, raises
+    VaultError("Could not open vault.").
+
     The master key and both key slots are unchanged; only the notes block
-    is re-encrypted.  A new nonce is mandatory on every save.
+    is re-encrypted. A new nonce is mandatory on every save.
 
     Returns:
         Updated vault bytes (new notes nonce).
     """
     fields = _unpack_vault(vault_bytes)
-
-    notes_json = _notes_to_json(notes)
-
-    # Generate a new nonce — reusing the same nonce with the same key is forbidden
-    new_notes_nonce = os.urandom(NONCE_LENGTH)
-
-    # Build a temporary vault to compute the new AAD (notes_nonce is part of the header)
-    _tmp = _pack_vault(
-        fields["memory_cost"], fields["time_cost"], fields["parallelism"],
-        fields["password_salt"], fields["password_nonce"], fields["password_ciphertext"],
-        fields["recovery_salt"], fields["recovery_nonce"], fields["recovery_ciphertext"],
-        new_notes_nonce, b"",
-    )
-    aad = _tmp[:_HEADER_SIZE]
-
-    aesgcm = AESGCM(bytes(master_key))
-    encrypted_notes = aesgcm.encrypt(new_notes_nonce, notes_json, aad)
-
-    return _pack_vault(
-        fields["memory_cost"], fields["time_cost"], fields["parallelism"],
-        fields["password_salt"], fields["password_nonce"], fields["password_ciphertext"],
-        fields["recovery_salt"], fields["recovery_nonce"], fields["recovery_ciphertext"],
-        new_notes_nonce, encrypted_notes,
+    _decrypt_notes_block(fields, master_key)
+    return _pack_vault_and_encrypt_notes(
+        fields["memory_cost"],
+        fields["time_cost"],
+        fields["parallelism"],
+        fields["password_salt"],
+        fields["password_nonce"],
+        fields["password_ciphertext"],
+        fields["recovery_salt"],
+        fields["recovery_nonce"],
+        fields["recovery_ciphertext"],
+        master_key,
+        notes,
     )
 
 
@@ -585,7 +623,7 @@ def change_password(
     """
     Replace the password slot with a new salt and new encryption.
     The notes block is re-encrypted under the new AAD (because the header
-    includes the password slot).  The recovery slot is untouched.
+    includes the password slot). The recovery slot is untouched.
 
     IMPORTANT: Because the header (= AAD) contains the password slot, changing
     the slot changes the AAD, so the notes block must be re-encrypted.
@@ -593,18 +631,27 @@ def change_password(
 
     Raises:
         ValueError: New password is too short.
+        VaultError: Invalid master key or authentication failure.
     """
-    if len(new_password) < MIN_PASSWORD_LENGTH:
+    normalized = _normalize_password(new_password)
+    if len(normalized) < MIN_PASSWORD_LENGTH:
         raise ValueError(
             f"New password must be at least {MIN_PASSWORD_LENGTH} characters long."
         )
 
     fields = _unpack_vault(vault_bytes)
+    notes_json = _decrypt_notes_block(fields, master_key)
 
-    # Derive new wrap key from new password
+    # Derive new wrap key from new password using the header's Argon2id parameters
     new_password_salt = os.urandom(PASSWORD_SALT_LENGTH)
-    new_password_bytes = new_password.encode("utf-8")
-    new_wrap_key = _argon2id_derive(new_password_bytes, new_password_salt)
+    new_password_bytes = normalized.encode("utf-8")
+    new_wrap_key = _argon2id_derive(
+        new_password_bytes,
+        new_password_salt,
+        memory_cost=fields["memory_cost"],
+        time_cost=fields["time_cost"],
+        parallelism=fields["parallelism"],
+    )
     try:
         new_password_nonce, new_password_ciphertext = _aesgcm_wrap(
             new_wrap_key, bytes(master_key)
@@ -612,31 +659,19 @@ def change_password(
     finally:
         _secure_zero(new_wrap_key)
 
-    # Header changed → re-encrypt the notes block under the new AAD
-    old_aesgcm = AESGCM(bytes(master_key))
-    notes_json = old_aesgcm.decrypt(
-        fields["notes_nonce"],
-        fields["encrypted_notes"],
-        fields["aad"],
-    )
-
-    new_notes_nonce = os.urandom(NONCE_LENGTH)
-    _tmp = _pack_vault(
-        fields["memory_cost"], fields["time_cost"], fields["parallelism"],
-        new_password_salt, new_password_nonce, new_password_ciphertext,
-        fields["recovery_salt"], fields["recovery_nonce"], fields["recovery_ciphertext"],
-        new_notes_nonce, b"",
-    )
-    new_aad = _tmp[:_HEADER_SIZE]
-
-    new_aesgcm = AESGCM(bytes(master_key))
-    new_encrypted_notes = new_aesgcm.encrypt(new_notes_nonce, notes_json, new_aad)
-
-    return _pack_vault(
-        fields["memory_cost"], fields["time_cost"], fields["parallelism"],
-        new_password_salt, new_password_nonce, new_password_ciphertext,
-        fields["recovery_salt"], fields["recovery_nonce"], fields["recovery_ciphertext"],
-        new_notes_nonce, new_encrypted_notes,
+    # Re-encrypt notes under new header AAD using deduplicated helper
+    return _pack_vault_and_encrypt_notes(
+        fields["memory_cost"],
+        fields["time_cost"],
+        fields["parallelism"],
+        new_password_salt,
+        new_password_nonce,
+        new_password_ciphertext,
+        fields["recovery_salt"],
+        fields["recovery_nonce"],
+        fields["recovery_ciphertext"],
+        master_key,
+        notes_json,
     )
 
 
@@ -646,15 +681,19 @@ def regenerate_recovery_key(
     """
     Replace the recovery slot with a newly generated recovery key.
     The notes block is re-encrypted under the new AAD (because the header
-    includes the recovery slot).  The password slot is untouched.
+    includes the recovery slot). The password slot is untouched.
 
     IMPORTANT: Because the header (= AAD) contains the recovery slot, changing
     the slot changes the AAD, so the notes block must be re-encrypted.
 
     Returns:
         (new_vault_bytes, new_recovery_key_str)
+
+    Raises:
+        VaultError: Invalid master key or authentication failure.
     """
     fields = _unpack_vault(vault_bytes)
+    notes_json = _decrypt_notes_block(fields, master_key)
 
     new_raw_recovery = os.urandom(RECOVERY_KEY_LENGTH)
     new_recovery_salt = os.urandom(RECOVERY_SALT_LENGTH)
@@ -666,60 +705,17 @@ def regenerate_recovery_key(
     finally:
         _secure_zero(new_wrap_key)
 
-    # Header changed → re-encrypt the notes block under the new AAD
-    old_aesgcm = AESGCM(bytes(master_key))
-    notes_json = old_aesgcm.decrypt(
-        fields["notes_nonce"],
-        fields["encrypted_notes"],
-        fields["aad"],
-    )
-
-    new_notes_nonce = os.urandom(NONCE_LENGTH)
-    _tmp = _pack_vault(
-        fields["memory_cost"], fields["time_cost"], fields["parallelism"],
-        fields["password_salt"], fields["password_nonce"], fields["password_ciphertext"],
-        new_recovery_salt, new_recovery_nonce, new_recovery_ciphertext,
-        new_notes_nonce, b"",
-    )
-    new_aad = _tmp[:_HEADER_SIZE]
-
-    new_aesgcm = AESGCM(bytes(master_key))
-    new_encrypted_notes = new_aesgcm.encrypt(new_notes_nonce, notes_json, new_aad)
-
-    new_vault = _pack_vault(
-        fields["memory_cost"], fields["time_cost"], fields["parallelism"],
-        fields["password_salt"], fields["password_nonce"], fields["password_ciphertext"],
-        new_recovery_salt, new_recovery_nonce, new_recovery_ciphertext,
-        new_notes_nonce, new_encrypted_notes,
+    new_vault = _pack_vault_and_encrypt_notes(
+        fields["memory_cost"],
+        fields["time_cost"],
+        fields["parallelism"],
+        fields["password_salt"],
+        fields["password_nonce"],
+        fields["password_ciphertext"],
+        new_recovery_salt,
+        new_recovery_nonce,
+        new_recovery_ciphertext,
+        master_key,
+        notes_json,
     )
     return new_vault, _format_recovery_key(new_raw_recovery)
-
-
-def create_note(title: str = "", content: str = "") -> dict:
-    """
-    Create a new note object.
-
-    Note data model: id (uuid4), title, content, created, modified.
-    """
-    now = _utc_now_iso()
-    return {
-        "id":       str(uuid.uuid4()),
-        "title":    title,
-        "content":  content,
-        "created":  now,
-        "modified": now,
-    }
-
-
-def update_note(
-    note: dict,
-    title: str | None = None,
-    content: str | None = None,
-) -> dict:
-    """Update an existing note's title and/or content; refresh the modified timestamp."""
-    if title is not None:
-        note["title"] = title
-    if content is not None:
-        note["content"] = content
-    note["modified"] = _utc_now_iso()
-    return note

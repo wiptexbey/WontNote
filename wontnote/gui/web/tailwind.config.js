@@ -1,0 +1,83 @@
+module.exports = {
+  content: ["./wontnote/gui/web/**/*.{html,js}"],
+  theme: {
+    extend: {
+      colors: {
+        "on-primary-fixed": "#0f0069",
+        "primary-fixed": "#e2dfff",
+        "on-error": "#ffffff",
+        "secondary-fixed": "#e5deff",
+        "on-surface": "#1b1b21",
+        "primary": "#493ee5",
+        "surface": "#fbf8ff",
+        "outline": "#777587",
+        "secondary-fixed-dim": "#c7bfff",
+        "on-secondary-fixed-variant": "#4225bf",
+        "on-primary": "#ffffff",
+        "on-tertiary-container": "#fefaff",
+        "inverse-primary": "#c3c0ff",
+        "tertiary-fixed": "#e4e0f5",
+        "on-tertiary-fixed": "#1b1a29",
+        "surface-container-low": "#f5f2fb",
+        "surface-tint": "#4c42e9",
+        "inverse-surface": "#303036",
+        "on-tertiary": "#ffffff",
+        "tertiary-container": "#747284",
+        "primary-container": "#635bff",
+        "on-background": "#1b1b21",
+        "on-tertiary-fixed-variant": "#464555",
+        "tertiary": "#5b5a6b",
+        "secondary-container": "#715def",
+        "inverse-on-surface": "#f2eff8",
+        "tertiary-fixed-dim": "#c7c4d8",
+        "surface-container-lowest": "#ffffff",
+        "surface-dim": "#dbd9e1",
+        "primary-fixed-dim": "#c3c0ff",
+        "on-secondary": "#ffffff",
+        "surface-container-high": "#eae7ef",
+        "error": "#ba1a1a",
+        "on-primary-fixed-variant": "#321ed2",
+        "on-surface-variant": "#464555",
+        "outline-variant": "#c7c4d8",
+        "error-container": "#ffdad6",
+        "surface-variant": "#e4e1ea",
+        "on-secondary-container": "#fffbff",
+        "on-secondary-fixed": "#180064",
+        "surface-bright": "#fbf8ff",
+        "surface-container": "#efecf5",
+        "surface-container-highest": "#e4e1ea",
+        "on-primary-container": "#fefaff",
+        "secondary": "#5841d5",
+        "background": "#fbf8ff",
+        "on-error-container": "#93000a"
+      },
+      borderRadius: {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+      },
+      spacing: {
+        "space-sm": "0.5rem",
+        "space-lg": "1.25rem",
+        "space-xl": "2rem",
+        "space-md": "0.75rem",
+        "margin": "1rem",
+        "gutter": "0.75rem",
+        "space-xs": "0.25rem"
+      },
+      fontFamily: {
+        "headline-lg": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        "mono-shortcut": ["Segoe UI", "Consolas", "monospace"],
+        "body-md": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        "label-md": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        "headline-md": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        "label-sm": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        "body-sm": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        "body-lg": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        "headline-sm": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        "title-window": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
+      }
+    }
+  }
+};

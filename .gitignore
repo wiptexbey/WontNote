@@ -3,6 +3,13 @@
 *.enc
 *.vault
 
+# Environment and secrets
+.env
+.env.*
+*.key
+*.pem
+*.token
+
 # Python cache files
 __pycache__/
 *.py[cod]

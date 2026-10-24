@@ -1,1 +1,1 @@
-# wontnote paketi başlatıcı
+# wontnote package initializer

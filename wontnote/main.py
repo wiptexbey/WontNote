@@ -1,14 +1,14 @@
 """
-main.py — WontNote Package Entry Point
-=======================================
-The Tkinter GUI will be launched from here in Phase 2.
-This file is intentionally minimal for Phase 1.
+main.py — WontNote Application Entry Point
+===========================================
+Launches the modern WontNote desktop application.
 """
 
 
 def main() -> None:
-    """Application entry point. Will start the GUI (gui.py) in Phase 2."""
-    print("WontNote — awaiting Phase 2.")
+    """Start the WontNote desktop application."""
+    from wontnote.gui.app import App
+    App().run()
 
 
 if __name__ == "__main__":
